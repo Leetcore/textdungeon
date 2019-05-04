@@ -1,2 +1,3 @@
-# textdungeon
-Twitter DM RPG adventure game
+# Twitter Game
+
+Twitter API + Game Mechanic

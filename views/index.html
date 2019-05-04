@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Twitter Textadventure</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <style>
+      body {
+        font-family: Verdana, Tahoma, sans-serif;
+        padding: 10px;
+        max-width: 500px;
+        margin: 50px auto;
+      }
+      p {
+        line-height: 180%;
+      }
+      .spieler {
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: rgb(37, 73, 23);
+      }
+      .meinspieler {
+        width: 15px;
+        height: 15px;
+        z-index: 10;
+        background-color: rgb(124, 107, 31);
+      }
+      .spieler:hover, .meinspieler:hover {
+        cursor: pointer;
+      }
+      .monster {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background-color: rgb(179, 17, 17);
+      }
+      #karte {
+        position: relative;
+        overflow: auto;
+        height: 350px;
+        padding: 5px;
+      }
+      .feld {
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        background-color: rgb(172, 164, 164);
+      }
+      .spawn {
+        background-color: #333;
+      }
+      .bossfeld {
+        background-color: #F33;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>
+        Twitter Textadventure
+      </h1>
+    </header>
+
+    <main>
+      <b>Diese Karte muss geöffnet bleiben, wenn mit dem Chatbot gespielt wird.</b>
+      <p>
+        Ein Dungeon Crawler in Twitter. Alle Befehle werden per privater Nachricht an <a href="https://twitter.com/TextDungeon">@TextDungeon</a> geschickt. Mit /start per privater Nachricht kannst du anfangen und dich im Dungeon bewegen. Es gibt Waffen zu finden, Heiltränke zu trinken und seltene Bosse zu besiegen!
+      </p>
+      <h2>
+        Die Karte
+      </h2>
+      <p>Zur Orientierung: Der Spawn (x1y1) ist oben links.</p>
+      <div id="karte"></div>
+      Spielerstatistik: <input type="text" id="playerSearch" autofocus placeholder="@twittername" onchange="searchPlayer(this.value)" list="alleSpieler"/>
+      <datalist id="alleSpieler"></datalist>
+      <div id="stats"></div>
+      <h2>Alle Befehle</h2>
+        <ul>
+            <li>start</li>
+            <li>hilfe  = Die Kurzhilfe.</li>
+            <li>gehe richtung norden = Im Dungeon bewegen.</li>
+            <li>links = Im Dungeon bewegen. (Kurzbefehle)</li>
+            <li>rechts = Im Dungeon bewegen.</li>
+            <li>hoch = Im Dungeon bewegen.</li>
+            <li>runter = Im Dungeon bewegen.</li>
+            <li>gehe zu x1y1 = Direkt bewegen, wird durch Kampf abgebrochen.</li>
+            <li>umsehen = Was siehst du?</li>
+            <li>fähigkeiten = Was kannst du einsetzen?</li>
+            <li>nehmen = Gegenstände auf dem Boden oder aus einer Truhen nehmen und ausrüsten.</li>
+            <li>öffnen = Türen oder Truhen öffnen.</li>
+            <li>nutzen = Tränke an einem Tisch benutzen.</li>
+          </ul>
+      <h2>
+        Allgemeine Infos
+      </h2>
+      <p>
+        Es gibt sichere Felder, auf die nie ein Gegner kommen wird. Bestimmt Angst oder so! Dort kannst du deinen Held oder deine Heldin ausruhen lassen.
+      </p>
+      <p>
+        Wenn du ein Feld mit Monstern betrittst, kämpfst du automatisch gegen das erste Monster in der Liste. Du brauchst dazu nichts zu tippen.<br/>
+        Der Schaden wird alle FÜNF Minuten berechnet. Mit /umsehen, kannst du sehen welche Gegner dich erwarten. Falls du besiegt wirst, landest du wieder am Spawn.<br/>
+        Um den Kampf zu beenden, LAUF WEG!!!
+      </p>
+      <p>
+        Es gibt besondere Waffen, die dich heilen können z.B. 💍 Magischer Ring und Waffen, die einem Angriff ausweichen können z.B. 🏹 Geschickter Bogen.
+      </p>
+      <p>
+        Achtung: Bossgegner sind besonders stark und erscheinen nur auf roten Bossfeldern!
+      </p>
+      <script>
+        var map = []
+        var multi = 80
+        var timer
+
+        function karteRequest () {
+          var http = new XMLHttpRequest()
+          http.open('GET', '/karte')
+          http.addEventListener('load', function (data) {
+            map = JSON.parse(data.target.response)
+            renderMap(map)
+            updateStuff()
+          })
+          http.send()
+        }
+        karteRequest()
+
+        function updateStuff () {
+          var httpSpieler = new XMLHttpRequest()
+          httpSpieler.open('GET', '/spieler')
+          httpSpieler.addEventListener('load', function (data) {
+            spieler = JSON.parse(data.target.response)
+            renderSpieler(spieler)
+          })
+          httpSpieler.send()
+
+          var httpMonster = new XMLHttpRequest()
+          httpMonster.open('GET', '/monster')
+          httpMonster.addEventListener('load', function (data) {
+            monster = JSON.parse(data.target.response)
+            renderMonster(monster)
+          })
+          httpMonster.send()
+
+          clearTimeout(timer)
+          timer = setTimeout(updateStuff, 55 * 1000)
+        }
+        
+        function renderMap(map) {
+          document.getElementById('karte').innerHTML = ""
+          for (var index = 0; index < map.length; index++) {
+            var x = map[index].x - 1
+            var y = map[index].y - 1
+            document.getElementById('karte').insertAdjacentHTML('afterbegin', '<div class="feld '+ map[index].type +'" title="x'+ map[index].x +'y'+ map[index].y +'" style="left: '+ x * multi +'px; top: '+ y * multi +'px;"></div>')
+          }
+        }
+        function renderSpieler (spieler) {
+          var alleSpieler = document.querySelectorAll('.spieler')
+          alleSpieler.forEach(function (einSpieler) {
+            einSpieler.remove();
+          });
+          document.getElementById('alleSpieler').innerHTML = ""
+          for (var index = 0; index < spieler.length; index++) {
+            document.getElementById('alleSpieler').insertAdjacentHTML('beforeend', '<option value="'+ spieler[index].screen_name +'"/>')
+              
+            var meineSpielerKlasse = ""
+            if (getUsername() === spieler[index].screen_name) {
+              meineSpielerKlasse = " meinspieler"
+              renderStats(spieler[index])
+            }
+            var x = (spieler[index].x - 1) * multi + multi / 2 + zufallszahl(-multi / 2, multi / 2)
+            var y = (spieler[index].y - 1) * multi + multi / 2 + zufallszahl(-multi / 2, multi / 2)
+            // var size = (spieler[index].waffe || {}).angriff || 5
+            document.getElementById('karte').insertAdjacentHTML('beforeend', '<div class="spieler'+ meineSpielerKlasse +'" onclick="clickPlayer(this.title);" style="left: '+ x + 'px; top: '+ y +'px;" title="'+ spieler[index].screen_name + '"></div>')
+          }
+        }
+        function renderMonster (monster) {
+          var alleMonster = document.querySelectorAll('.monster')
+          alleMonster.forEach(function (einMonster) {
+            einMonster.remove();
+          });
+          for (var index = 0; index < monster.length; index++) {
+            var x = (monster[index].x - 1) * multi + multi / 2 + zufallszahl(-multi / 2, multi / 2)
+            var y = (monster[index].y - 1) * multi + multi / 2 + zufallszahl(-multi / 2, multi / 2)
+            var size = monster[index].angriff
+            document.getElementById('karte').insertAdjacentHTML('beforeend', '<div class="monster" style="left: '+ x + 'px; top: '+ y +'px; width: '+ size +'px; height: '+ size +'px;"></div>')
+          }
+        }
+
+        function zufallszahl(min, max) {
+            return Math.floor((Math.random() * max) + min);
+        }
+        function getUsername () {
+          return document.location.hash.replace("#@", "");
+        }
+        function renderStats(spieler) {
+          var zusatzInfos = ""
+          if ((spieler.waffe || {}).kritisch) {
+            zusatzInfos += " 1/"+ (spieler.waffe || {}).kritisch +"🔥"
+          }
+          if ((spieler.waffe || {}).ausweichen) {
+            zusatzInfos += " 1/"+ (spieler.waffe || {}).ausweichen +"👤"
+          }
+          if ((spieler.waffe || {}).heilung) {
+            zusatzInfos += " 1/"+ (spieler.waffe || {}).heilung +"💉"
+          }
+          var maxSchaden = ''
+          if ((spieler.waffe || {}).maxSchaden) { 
+            maxSchaden = ' - ' + spieler.waffe.maxSchaden
+          }
+          document.getElementById('stats').innerHTML = "Name: "+ spieler.screen_name + ", Gesundheit: "+ spieler.leben +"🛡️, Heldentaten: "+ (spieler.kills || 0) +"🏅, Bosse: "+ (spieler.bosskills || 0) +"🏆, Waffe: "+ (spieler.waffe || {}).name +" mit "+ (spieler.waffe || {}).angriff + maxSchaden +"⚔️"+ zusatzInfos + "."
+        }
+        function tooltipp (x, y, text) {
+          document.getElementById('karte').insertAdjacentHTML()
+        }
+        function searchPlayer (name) {
+          if (name.indexOf("@") === -1) {
+            name = "@"+ name
+          }
+          history.pushState(null, null, "#"+ name);
+          updateStuff();
+        }
+        function clickPlayer (name) {
+          document.getElementById('playerSearch').value = name;
+          searchPlayer(name);
+        }
+      </script>
+    </main>
+  </body>
+</html>
