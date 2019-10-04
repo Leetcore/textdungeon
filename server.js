@@ -267,7 +267,7 @@ function speichereDB() {
 	if (typeof txtadv === 'object' && txtadv.spieler.length > 0) {
 		try {
 			var data = JSON.stringify(txtadv)
-			if (typeof data === 'string' && data !== '') {
+			if (typeof data === 'string' && data !== '' && data.spieler.length > 0) {
 				fs.writeFile([__dirname, '/db.json'].join(''), data, function (err) {
 					if (err) {
 						return console.log(err)
