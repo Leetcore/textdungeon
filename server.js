@@ -265,7 +265,7 @@ var txtadvDEFAULTs = {
   monster: []
 };
 var kampfTimer = 5 * 60 * 1000;
-var DMTimer = 2 * 60 * 1000;
+var DMTimer = 1 * 60 * 1000;
 var globalTimer = 30000;
 var allTimer = [];
 var tempBuff = {};
@@ -363,7 +363,7 @@ function requestMessages() {
   client.get(
     "direct_messages/events/list",
     {
-      count: 20,
+      count: 50,
       skip_status: true
     },
     function(error, messages, response) {
@@ -372,11 +372,10 @@ function requestMessages() {
       } else {
         // read DM
         var userRequests = [];
-        // messages = messages.sort(message => {
         messages = messages.events
           .reverse()
           .filter(message => {
-            if (message.message_create.sender_id == 250090545) {
+            if (message.message_create.sender_id == '14611268') {
               return false;
             } else {
               return true;
@@ -399,13 +398,13 @@ function requestMessages() {
         const screenNameRequests = [];
         const DontDoubleRequest = [];
         messages.forEach(message => {
-          if (DontDoubleRequest.indexOf(message.sender_Id) < 0) {
+          if (DontDoubleRequest.indexOf(message.sender_id) < 0) {
             screenNameRequests.push(
               client.get("users/show", {
                 user_id: message.sender_id
               })
             );
-            DontDoubleRequest.push(message.sender_Id);
+            DontDoubleRequest.push(message.sender_id);
           }
         });
 
@@ -442,8 +441,7 @@ function requestMessages() {
                 txtadv.beantwortet.splice(0, 1);
               }
               if (
-                nichtBeantwortet(message.id) &&
-                message.sender.id_str != "922728274006040578"
+                nichtBeantwortet(message.id)
                 // && message.user.id == 250090545
               ) {
                 txtadv.beantwortet.push(parseFloat(message.id));
@@ -1642,20 +1640,8 @@ function kampf(geladenerSpieler) {
         if (zufallszahl(1, 3) === 1) {
           console.log("neues monster!");
           // monster mit spielerschaden!
-          if (
-            (geladenerSpieler.waffe || {}).angriff >= 15 &&
-            zufallszahl(0, 1) === 1
-          ) {
-            var angriff = zufallszahl(
-              geladenerSpieler.waffe.angriff - 5,
-              geladenerSpieler.waffe.angriff
-            );
-            console.log("monster mit spieler schaden! " + angriff);
-            gegnerSpawn(
-              angriff,
-              geladenerSpieler.waffe.kritisch || false,
-              geladenerSpieler.waffe.ausweichen || false
-            );
+          if (zufallszahl(0, 1) === 1) {
+            gegnerSpawn();
           } else {
             gegnerSpawn();
             gegnerSpawn();
