@@ -128,7 +128,8 @@ var aktuelleKarte = [
     type: "feld",
     x: 5,
     y: 4,
-    text: "Du bist ganz in der Nähe des dunklen Throns. Hier gibt es einige Monstereier!"
+    text:
+      "Du bist ganz in der Nähe des dunklen Throns. Hier gibt es einige Monstereier!"
   },
   {
     type: "truhe",
@@ -149,7 +150,8 @@ var aktuelleKarte = [
     type: "feld",
     x: 6,
     y: 3,
-    text: "Hier hat die Brut ihren Ursprung. Jederzeit können neue Monster auftauchen! Früher war hier ein netter Ort. Jetzt nicht mehr..."
+    text:
+      "Hier hat die Brut ihren Ursprung. Jederzeit können neue Monster auftauchen! Früher war hier ein netter Ort. Jetzt nicht mehr..."
   },
   {
     type: "bossfeld",
@@ -361,7 +363,7 @@ function requestMessages() {
   client.get(
     "direct_messages/events/list",
     {
-      count: 10,
+      count: 20,
       skip_status: true
     },
     function(error, messages, response) {
@@ -371,584 +373,603 @@ function requestMessages() {
         // read DM
         var userRequests = [];
         // messages = messages.sort(message => {
-        messages = messages.events.reverse().map(message => {
-          return ({
-            id: message.id,
-            sender_id: message.message_create.sender_id,
-            sender: {
-              id_str: message.message_create.sender_id,
-              id: parseInt(message.message_create.sender_id)
-            },
-            user: {
-              id: message.message_create.sender_id
-            },
-            text: message.message_create.message_data.text
+        messages = messages.events
+          .reverse()
+          .filter(message => {
+            if (message.message_create.sender_id == 250090545) {
+              return false;
+            } else {
+              return true;
+            }
+          })
+          .map(message => {
+            return {
+              id: message.id,
+              sender_id: message.message_create.sender_id,
+              sender: {
+                id_str: message.message_create.sender_id,
+                id: parseInt(message.message_create.sender_id)
+              },
+              user: {
+                id: message.message_create.sender_id
+              },
+              text: message.message_create.message_data.text
+            };
           });
-        });
         const screenNameRequests = [];
+        const DontDoubleRequest = [];
         messages.forEach(message => {
-          screenNameRequests.push(
-            client.get("users/show", {
-              user_id: message.sender_id
-            })
-          );
+          if (DontDoubleRequest.indexOf(message.sender_Id) < 0) {
+            screenNameRequests.push(
+              client.get("users/show", {
+                user_id: message.sender_id
+              })
+            );
+            DontDoubleRequest.push(message.sender_Id);
+          }
         });
 
         Promise.all(screenNameRequests)
-        .then(results => {
-          messages = messages.map(message => {
-            for (let index = 0; index < results.length; index++) {
-              let result = results[index];
-              if (message.sender_id == result.data.id_str) {
-                message.sender.name = result.data.screen_name;
-                message.sender.screen_name = result.data.screen_name;
-                return message;
+          .then(results => {
+            messages = messages.map(message => {
+              for (let index = 0; index < results.length; index++) {
+                let result = results[index];
+                if (message.sender_id == result.data.id_str) {
+                  message.sender.name = result.data.screen_name;
+                  message.sender.screen_name = result.data.screen_name;
+                  return message;
+                }
               }
-            }
-          });
+            });
 
-          messages.filter(message => {
-            if (message) {
-              return true;
-            } else {
-              return false;
-            }
-          });
+            messages.filter(message => {
+              if (message) {
+                return true;
+              } else {
+                return false;
+              }
+            });
 
-          messages.forEach(message => {
-            if (error) {
-              console.warn(error);
-              return false;
-            }
-
-            // message.user.id == 250090545 &&
-            if (txtadv.beantwortet.length > 100) {
-              // räumt db auf
-              txtadv.beantwortet.splice(0, 1);
-            }
-            if (
-              nichtBeantwortet(message.id) &&
-              message.sender.id_str != "922728274006040578"
-              // && message.user.id == 250090545
-            ) {
-              txtadv.beantwortet.push(parseFloat(message.id));
-              userRequests.push(parseFloat(message.id));
-              console.log("message: ", message.text);
-
-              // lade spieler
-              var aktuellerSpieler = ladeSpieler(
-                message.sender.id_str,
-                message.sender.id
-              );
-              // analysiere tweet
-              var textInput = message.text.toLowerCase();
-              textInput = textInput.trim().replace("@textdungeon", "");
-              textInput = textInput.trim();
-              if (textInput.indexOf("/") < 0) {
-                textInput = "/" + textInput;
+            messages.forEach(message => {
+              if (error) {
+                console.warn(error);
+                return false;
               }
 
-              console.log(
-                "befehl = " + textInput + " von " + message.sender.name
-              );
-              clearTimeout(allTimer[aktuellerSpieler.id_str]);
-
-              // screen_name update and id_str
-              if (aktuellerSpieler) {
-                aktuellerSpieler.screen_name = message.sender.screen_name;
-                aktuellerSpieler.id_str = message.sender.id_str;
+              // message.user.id == 250090545 &&
+              if (txtadv.beantwortet.length > 100) {
+                // räumt db auf
+                txtadv.beantwortet.splice(0, 1);
               }
+              if (
+                nichtBeantwortet(message.id) &&
+                message.sender.id_str != "922728274006040578"
+                // && message.user.id == 250090545
+              ) {
+                txtadv.beantwortet.push(parseFloat(message.id));
+                userRequests.push(parseFloat(message.id));
+                console.log("message: ", message.text);
 
-              // befehle ausführen
-              if (aktuellerSpieler === false && textInput === "/start") {
-                // create new user at spawn
-                var einneuerspieler = new neuerSpieler(
-                  message.sender.id,
+                // lade spieler
+                var aktuellerSpieler = ladeSpieler(
                   message.sender.id_str,
-                  message.sender.screen_name
+                  message.sender.id
                 );
-                console.log("neuer Spieler = " + message.sender.name);
+                // analysiere tweet
+                var textInput = message.text.toLowerCase();
+                textInput = textInput.trim().replace("@textdungeon", "");
+                textInput = textInput.trim();
+                if (textInput.indexOf("/") < 0) {
+                  textInput = "/" + textInput;
+                }
 
-                txtadv.spieler.push(einneuerspieler);
-                var kartenPunkt = koordinaten(
-                  einneuerspieler.x,
-                  einneuerspieler.y
+                console.log(
+                  "befehl = " + textInput + " von " + message.sender.name
                 );
-                sendMessage(message.sender.id_str, kartenPunkt.text);
-              } else if (aktuellerSpieler) {
-                switch (textInput) {
-                  case "/start":
-                    sendMessage(
-                      message.sender.id_str,
-                      "Es kann losgehen! " + alleBefehle()
-                    );
-                    break;
+                clearTimeout(allTimer[aktuellerSpieler.id_str]);
 
-                  case "/hilfe":
-                  case "/help":
-                    sendMessage(
-                      message.sender.id_str,
-                      "Wenn du ein Feld mit Monstern betrittst kämpfst du automatisch gegen diese. Alle fünf Minuten findet ein Kampf statt. Bring dich bei schwacher Gesundheit in Sicherheit z.B. auf Felder mit Truhen, Zaubertischen oder dem Spawn. \nWeitere " +
-                        alleBefehle()
-                    );
-                    break;
+                // screen_name update and id_str
+                if (aktuellerSpieler) {
+                  aktuellerSpieler.screen_name = message.sender.screen_name;
+                  aktuellerSpieler.id_str = message.sender.id_str;
+                }
 
-                  case "/gehe richtung norden":
-                  case "/gehe norden":
-                  case "/norden":
-                  case "/hoch":
-                  case "/oben":
-                    // gehe richtung norden wenn es das gibt
-                    if (
-                      koordinaten(aktuellerSpieler.x, aktuellerSpieler.y - 1)
-                    ) {
-                      aktuellerSpieler.y = aktuellerSpieler.y - 1;
-                      var kartenPunkt = koordinaten(
-                        aktuellerSpieler.x,
-                        aktuellerSpieler.y
-                      );
-                      sendMessage(
-                        message.sender.id_str,
-                        directionInfos(kartenPunkt, aktuellerSpieler)
-                      );
-                    } else {
-                      sendMessage(
-                        message.sender.id_str,
-                        eineWand() + " Willst du dich /umsehen?"
-                      );
-                    }
-                    break;
+                // befehle ausführen
+                if (aktuellerSpieler === false && textInput === "/start") {
+                  // create new user at spawn
+                  var einneuerspieler = new neuerSpieler(
+                    message.sender.id,
+                    message.sender.id_str,
+                    message.sender.screen_name
+                  );
+                  console.log("neuer Spieler = " + message.sender.name);
 
-                  case "/gehe richtung osten":
-                  case "/gehe osten":
-                  case "/osten":
-                  case "/rechts":
-                    // gehe richtung osten wenn es das gibt
-                    if (
-                      koordinaten(aktuellerSpieler.x + 1, aktuellerSpieler.y)
-                    ) {
-                      aktuellerSpieler.x = aktuellerSpieler.x + 1;
-                      var kartenPunkt = koordinaten(
-                        aktuellerSpieler.x,
-                        aktuellerSpieler.y
-                      );
+                  txtadv.spieler.push(einneuerspieler);
+                  var kartenPunkt = koordinaten(
+                    einneuerspieler.x,
+                    einneuerspieler.y
+                  );
+                  sendMessage(message.sender.id_str, kartenPunkt.text);
+                } else if (aktuellerSpieler) {
+                  switch (textInput) {
+                    case "/start":
                       sendMessage(
                         message.sender.id_str,
-                        directionInfos(kartenPunkt, aktuellerSpieler)
+                        "Es kann losgehen! " + alleBefehle()
                       );
-                    } else {
-                      sendMessage(
-                        message.sender.id_str,
-                        eineWand() + " Willst du dich /umsehen?"
-                      );
-                    }
-                    break;
+                      break;
 
-                  case "/gehe richtung süden":
-                  case "/gehe süden":
-                  case "/süden":
-                  case "/unten":
-                  case "/runter":
-                    // gehe richtung süden wenn es das gibt
-                    if (
-                      koordinaten(aktuellerSpieler.x, aktuellerSpieler.y + 1)
-                    ) {
-                      aktuellerSpieler.y = aktuellerSpieler.y + 1;
-                      var kartenPunkt = koordinaten(
-                        aktuellerSpieler.x,
-                        aktuellerSpieler.y
-                      );
+                    case "/hilfe":
+                    case "/help":
                       sendMessage(
                         message.sender.id_str,
-                        directionInfos(kartenPunkt, aktuellerSpieler)
+                        "Wenn du ein Feld mit Monstern betrittst kämpfst du automatisch gegen diese. Alle fünf Minuten findet ein Kampf statt. Bring dich bei schwacher Gesundheit in Sicherheit z.B. auf Felder mit Truhen, Zaubertischen oder dem Spawn. \nWeitere " +
+                          alleBefehle()
                       );
-                    } else {
-                      sendMessage(
-                        message.sender.id_str,
-                        eineWand() + " Willst du dich /umsehen?"
-                      );
-                    }
-                    break;
+                      break;
 
-                  case "/gehe richtung westen":
-                  case "/gehe westen":
-                  case "/westen":
-                  case "/links":
-                    // gehe richtung westen wenn es das gibt
-                    if (
-                      koordinaten(aktuellerSpieler.x - 1, aktuellerSpieler.y)
-                    ) {
-                      aktuellerSpieler.x = aktuellerSpieler.x - 1;
-                      var kartenPunkt = koordinaten(
-                        aktuellerSpieler.x,
-                        aktuellerSpieler.y
-                      );
-                      sendMessage(
-                        message.sender.id_str,
-                        directionInfos(kartenPunkt, aktuellerSpieler)
-                      );
-                    } else {
-                      sendMessage(
-                        message.sender.id_str,
-                        eineWand() + " Willst du dich /umsehen?"
-                      );
-                    }
-                    break;
-
-                  case "/öffne":
-                  case "/öffnen":
-                    // aktion / interaktion mit truhe z.B.
-                    var kartenPunkt = koordinaten(
-                      aktuellerSpieler.x,
-                      aktuellerSpieler.y
-                    );
-                    if (kartenPunkt.inhalt && kartenPunkt.type == "truhe") {
-                      var antwort = "";
+                    case "/gehe richtung norden":
+                    case "/gehe norden":
+                    case "/norden":
+                    case "/hoch":
+                    case "/oben":
+                      // gehe richtung norden wenn es das gibt
                       if (
-                        aktuellerSpieler.waffe.angriff <=
-                        waffen[kartenPunkt.inhalt].angriff
+                        koordinaten(aktuellerSpieler.x, aktuellerSpieler.y - 1)
                       ) {
-                        antwort +=
-                          "Wow, du hast eine Waffe gefunden! " +
-                          waffenInfoText(waffen[kartenPunkt.inhalt]) +
-                          "\nWenn du sie gegen deine Waffe eintauschen möchtest, solltest du sie /nehmen.";
+                        aktuellerSpieler.y = aktuellerSpieler.y - 1;
+                        var kartenPunkt = koordinaten(
+                          aktuellerSpieler.x,
+                          aktuellerSpieler.y
+                        );
+                        sendMessage(
+                          message.sender.id_str,
+                          directionInfos(kartenPunkt, aktuellerSpieler)
+                        );
                       } else {
-                        antwort +=
-                          "Du hast eine Waffe gefunden! " +
-                          waffenInfoText(waffen[kartenPunkt.inhalt]) +
-                          "\nDeine aktuelle Waffe ist stärker...";
+                        sendMessage(
+                          message.sender.id_str,
+                          eineWand() + " Willst du dich /umsehen?"
+                        );
+                      }
+                      break;
+
+                    case "/gehe richtung osten":
+                    case "/gehe osten":
+                    case "/osten":
+                    case "/rechts":
+                      // gehe richtung osten wenn es das gibt
+                      if (
+                        koordinaten(aktuellerSpieler.x + 1, aktuellerSpieler.y)
+                      ) {
+                        aktuellerSpieler.x = aktuellerSpieler.x + 1;
+                        var kartenPunkt = koordinaten(
+                          aktuellerSpieler.x,
+                          aktuellerSpieler.y
+                        );
+                        sendMessage(
+                          message.sender.id_str,
+                          directionInfos(kartenPunkt, aktuellerSpieler)
+                        );
+                      } else {
+                        sendMessage(
+                          message.sender.id_str,
+                          eineWand() + " Willst du dich /umsehen?"
+                        );
+                      }
+                      break;
+
+                    case "/gehe richtung süden":
+                    case "/gehe süden":
+                    case "/süden":
+                    case "/unten":
+                    case "/runter":
+                      // gehe richtung süden wenn es das gibt
+                      if (
+                        koordinaten(aktuellerSpieler.x, aktuellerSpieler.y + 1)
+                      ) {
+                        aktuellerSpieler.y = aktuellerSpieler.y + 1;
+                        var kartenPunkt = koordinaten(
+                          aktuellerSpieler.x,
+                          aktuellerSpieler.y
+                        );
+                        sendMessage(
+                          message.sender.id_str,
+                          directionInfos(kartenPunkt, aktuellerSpieler)
+                        );
+                      } else {
+                        sendMessage(
+                          message.sender.id_str,
+                          eineWand() + " Willst du dich /umsehen?"
+                        );
+                      }
+                      break;
+
+                    case "/gehe richtung westen":
+                    case "/gehe westen":
+                    case "/westen":
+                    case "/links":
+                      // gehe richtung westen wenn es das gibt
+                      if (
+                        koordinaten(aktuellerSpieler.x - 1, aktuellerSpieler.y)
+                      ) {
+                        aktuellerSpieler.x = aktuellerSpieler.x - 1;
+                        var kartenPunkt = koordinaten(
+                          aktuellerSpieler.x,
+                          aktuellerSpieler.y
+                        );
+                        sendMessage(
+                          message.sender.id_str,
+                          directionInfos(kartenPunkt, aktuellerSpieler)
+                        );
+                      } else {
+                        sendMessage(
+                          message.sender.id_str,
+                          eineWand() + " Willst du dich /umsehen?"
+                        );
+                      }
+                      break;
+
+                    case "/öffne":
+                    case "/öffnen":
+                      // aktion / interaktion mit truhe z.B.
+                      var kartenPunkt = koordinaten(
+                        aktuellerSpieler.x,
+                        aktuellerSpieler.y
+                      );
+                      if (kartenPunkt.inhalt && kartenPunkt.type == "truhe") {
+                        var antwort = "";
+                        if (
+                          aktuellerSpieler.waffe.angriff <=
+                          waffen[kartenPunkt.inhalt].angriff
+                        ) {
+                          antwort +=
+                            "Wow, du hast eine Waffe gefunden! " +
+                            waffenInfoText(waffen[kartenPunkt.inhalt]) +
+                            "\nWenn du sie gegen deine Waffe eintauschen möchtest, solltest du sie /nehmen.";
+                        } else {
+                          antwort +=
+                            "Du hast eine Waffe gefunden! " +
+                            waffenInfoText(waffen[kartenPunkt.inhalt]) +
+                            "\nDeine aktuelle Waffe ist stärker...";
+                        }
+                        sendMessage(message.sender.id_str, antwort);
+                      } else {
+                        sendMessage(
+                          message.sender.id_str,
+                          "Hier kannst du nichts öffnen. Versuch doch in der Zeit Monster zu töten und die Welt zu retten!"
+                        );
+                      }
+                      break;
+
+                    case "/nehmen":
+                    case "/nehme":
+                    case "/nimm":
+                      // gegenstand aufnehmen
+                      var kartenPunkt = koordinaten(
+                        aktuellerSpieler.x,
+                        aktuellerSpieler.y
+                      );
+                      if (kartenPunkt.inhalt) {
+                        aktuellerSpieler.waffe =
+                          waffen[kartenPunkt.inhalt || 0];
+                        sendMessage(
+                          message.sender.id_str,
+                          "Du streckst stolz deine neue Waffe in die Luft. Mögen die Monster der Unterwelt vor deiner Kraft erzittern!"
+                        );
+                      } else if (kartenPunkt.type == "heiltrank") {
+                        sendMessage(
+                          message.sender.id_str,
+                          "Der Zauber verliert seine Wirkung, wenn er nicht direkt getrunken wird. Versuche den Heiltrank zu /nutzen."
+                        );
+                      } else if (kartenPunkt.type == "altar") {
+                        aktuellerSpieler.amulett = true;
+                        (aktuellerSpieler.waffe || {}).heilung = 2;
+                        sendMessage(
+                          message.sender.id_str,
+                          "Du hast ein Amulett der Heilung gefunden!"
+                        );
+                      } else {
+                        sendMessage(
+                          message.sender.id_str,
+                          "Hier kannst du nichts nehmen. Versuch doch in der Zeit Monster zu töten und die Welt zu retten!"
+                        );
+                      }
+                      break;
+
+                    case "/benutzen":
+                    case "/benutze":
+                    case "/nutzen":
+                    case "/nutze":
+                      // gegenstand benutzen
+                      var kartenPunkt = koordinaten(
+                        aktuellerSpieler.x,
+                        aktuellerSpieler.y
+                      );
+                      if (
+                        kartenPunkt.type == "heiltrank" &&
+                        aktuellerSpieler.leben < 100
+                      ) {
+                        aktuellerSpieler.leben = 80;
+                        sendMessage(
+                          message.sender.id_str,
+                          "Du nimmst einen großen Schluck und fühlst dich etwas besser. " +
+                            aktuellerSpieler.leben +
+                            "🛡️."
+                        );
+                      } else if (kartenPunkt.type == "heiltrank") {
+                        sendMessage(
+                          message.sender.id_str,
+                          "Der Heiltrank wirkt nicht mehr bei dir. Du solltest dich ausruhen."
+                        );
+                      }
+                      break;
+
+                    case "/verbessern":
+                    case "/amboss":
+                      // waffe verbessern
+                      var kartenPunkt = koordinaten(
+                        aktuellerSpieler.x,
+                        aktuellerSpieler.y
+                      );
+                      if (kartenPunkt.type == "amboss") {
+                        if (
+                          aktuellerSpieler.waffe &&
+                          (aktuellerSpieler.waffe.verbesserung || 0) < 1 &&
+                          aktuellerSpieler.kills > 0
+                        ) {
+                          aktuellerSpieler.kills = aktuellerSpieler.kills - 1;
+                          aktuellerSpieler.waffe.verbesserung =
+                            (aktuellerSpieler.waffe.verbesserung || 0) + 1;
+                          aktuellerSpieler.waffe.maxSchaden =
+                            aktuellerSpieler.waffe.angriff +
+                            aktuellerSpieler.waffe.verbesserung * 50;
+
+                          sendMessage(
+                            message.sender.id_str,
+                            "Mit der Kraft deiner Heldentat konntest du deine Waffe ⚔️ verbessern."
+                          );
+                        } else {
+                          sendMessage(
+                            message.sender.id_str,
+                            "Du kannst deine Waffen nicht weiter verbessern..."
+                          );
+                        }
+                      }
+                      break;
+
+                    case "/schild":
+                      // schild
+                      var kartenPunkt = koordinaten(
+                        aktuellerSpieler.x,
+                        aktuellerSpieler.y
+                      );
+                      if (kartenPunkt.type == "amboss") {
+                        if (
+                          aktuellerSpieler.kills > 0 &&
+                          aktuellerSpieler.leben < 150
+                        ) {
+                          aktuellerSpieler.leben = 150;
+                          aktuellerSpieler.kills = aktuellerSpieler.kills - 1;
+                          sendMessage(
+                            message.sender.id_str,
+                            "Mit dem Schild hast du 150🛡️ Gesundheit."
+                          );
+                        } else {
+                          sendMessage(
+                            message.sender.id_str,
+                            "Ohne Heldentaten kann ich nichts für dich tun..."
+                          );
+                        }
+                      }
+                      break;
+
+                    case "/kampf":
+                    case "/kämpfen":
+                    case "/angriff":
+                      // kampf infos
+                      var kartenPunkt = koordinaten(
+                        aktuellerSpieler.x,
+                        aktuellerSpieler.y
+                      );
+                      var antwort =
+                        "Du kämpfst automatisch, wenn du ein Feld mit einem Gegner betrittst. Der Kampf findet alle 10 Minuten gegen den ersten Gegner in der Reihe statt.\n\n";
+                      if (fullInfo(aktuellerSpieler, "monster") == "") {
+                        antwort += "Hier befindet sich gerade kein Monster.\n";
+                      } else if (fullInfo(aktuellerSpieler, "monster") !== "") {
+                        antwort += fullInfo(aktuellerSpieler, "monster");
                       }
                       sendMessage(message.sender.id_str, antwort);
-                    } else {
-                      sendMessage(
-                        message.sender.id_str,
-                        "Hier kannst du nichts öffnen. Versuch doch in der Zeit Monster zu töten und die Welt zu retten!"
-                      );
-                    }
-                    break;
+                      break;
 
-                  case "/nehmen":
-                  case "/nehme":
-                  case "/nimm":
-                    // gegenstand aufnehmen
-                    var kartenPunkt = koordinaten(
-                      aktuellerSpieler.x,
-                      aktuellerSpieler.y
-                    );
-                    if (kartenPunkt.inhalt) {
-                      aktuellerSpieler.waffe =
-                        waffen[kartenPunkt.inhalt || 0];
-                      sendMessage(
-                        message.sender.id_str,
-                        "Du streckst stolz deine neue Waffe in die Luft. Mögen die Monster der Unterwelt vor deiner Kraft erzittern!"
+                    case "/umsehen":
+                      // mehr infos
+                      var antwort = "";
+                      var mitspieler = spielerArray(
+                        aktuellerSpieler.x,
+                        aktuellerSpieler.y,
+                        aktuellerSpieler.id_str
                       );
-                    } else if (kartenPunkt.type == "heiltrank") {
-                      sendMessage(
-                        message.sender.id_str,
-                        "Der Zauber verliert seine Wirkung, wenn er nicht direkt getrunken wird. Versuche den Heiltrank zu /nutzen."
+                      if (mitspieler.length > 0) {
+                        antwort += "\n\nDu wirst von ";
+                        var namen = [];
+                        for (
+                          var index = 0;
+                          index < mitspieler.length;
+                          index++
+                        ) {
+                          namen.push("@" + mitspieler[index].screen_name);
+                        }
+                        antwort += namen.join(", ") + " unterstützt.\n";
+                      }
+                      var kartenPunkt = koordinaten(
+                        aktuellerSpieler.x,
+                        aktuellerSpieler.y
                       );
-                    } else if (kartenPunkt.type == "altar") {
-                      aktuellerSpieler.amulett = true;
-                      (aktuellerSpieler.waffe || {}).heilung = 2;
-                      sendMessage(
-                        message.sender.id_str,
-                        "Du hast ein Amulett der Heilung gefunden!"
-                      );
-                    } else {
-                      sendMessage(
-                        message.sender.id_str,
-                        "Hier kannst du nichts nehmen. Versuch doch in der Zeit Monster zu töten und die Welt zu retten!"
-                      );
-                    }
-                    break;
 
-                  case "/benutzen":
-                  case "/benutze":
-                  case "/nutzen":
-                  case "/nutze":
-                    // gegenstand benutzen
-                    var kartenPunkt = koordinaten(
-                      aktuellerSpieler.x,
-                      aktuellerSpieler.y
-                    );
-                    if (
-                      kartenPunkt.type == "heiltrank" &&
-                      aktuellerSpieler.leben < 100
-                    ) {
-                      aktuellerSpieler.leben = 80;
+                      // loot?
+                      if (kartenPunkt.inhalt && kartenPunkt.type !== "truhe") {
+                        antwort +=
+                          "Hier liegt diese Waffe: " +
+                          waffenInfoText(waffen[kartenPunkt.inhalt]) +
+                          " Willst du sie /nehmen?";
+                      }
                       sendMessage(
                         message.sender.id_str,
-                        "Du nimmst einen großen Schluck und fühlst dich etwas besser. " +
+                        (kartenPunkt.text || "") +
+                          " " +
+                          fullInfo(aktuellerSpieler, "monster") +
+                          antwort +
+                          " " +
+                          fullInfo(aktuellerSpieler, "koords")
+                      );
+                      break;
+
+                    case "/ich":
+                      // aktuelle zustand des Spielers
+                      var antwort = "";
+                      if (aktuellerSpieler.bluten) {
+                        antwort += "😱 Überall Blut! ";
+                      }
+                      if (aktuellerSpieler.leben <= 50) {
+                        antwort +=
+                          "Du siehst geschwächt aus und hast noch " +
                           aktuellerSpieler.leben +
-                          "🛡️."
-                      );
-                    } else if (kartenPunkt.type == "heiltrank") {
-                      sendMessage(
-                        message.sender.id_str,
-                        "Der Heiltrank wirkt nicht mehr bei dir. Du solltest dich ausruhen."
-                      );
-                    }
-                    break;
+                          "🛡️.";
+                      } else {
+                        antwort +=
+                          "Deine Gesundheit: " + aktuellerSpieler.leben + "🛡️.";
+                      }
+                      if (aktuellerSpieler.amulett) {
+                        antwort += " Du trägst ein Amulett.\n";
+                      } else {
+                        antwort += "\n";
+                      }
+                      antwort += waffenInfoText(aktuellerSpieler.waffe) + "\n";
+                      antwort +=
+                        "Du hast " +
+                        (aktuellerSpieler.kills || 0) +
+                        "🏅 Heldentaten vollbracht.";
+                      //  und bist " + (aktuellerSpieler.tot || 0) + " mal gescheitert
+                      sendMessage(message.sender.id_str, antwort);
+                      break;
 
-                  case "/verbessern":
-                  case "/amboss":
-                    // waffe verbessern
-                    var kartenPunkt = koordinaten(
-                      aktuellerSpieler.x,
-                      aktuellerSpieler.y
-                    );
-                    if (kartenPunkt.type == "amboss") {
+                    case "/fähigkeiten":
+                    case "/fähigkeit":
+                      var alleFähigkeiten =
+                        "/heilen: Besinne dich auf deine 🏅Heldentaten und verarzte dich! Stoppt Blutungen! Du schaffst das.\n";
+                      alleFähigkeiten +=
+                        "/beten: 🙏 Wirf deine Waffe weg und bete, dass du diesen Kampf überlebst! -Waffe +1/2👤 +1/3💉.\n";
+                      alleFähigkeiten +=
+                        "/sturm: ⚔️ Du setzt alle Kraft in deinen Angriff. +10⚔️ Nutzt deine Waffe langsam ab.\n";
+                      sendMessage(message.sender.id_str, alleFähigkeiten);
+                      break;
+
+                    case "/heilen":
+                    case "/heile":
+                      if (aktuellerSpieler.kills >= 1) {
+                        aktuellerSpieler.kills = aktuellerSpieler.kills - 1;
+                        aktuellerSpieler.leben = aktuellerSpieler.leben + 50;
+                        aktuellerSpieler.bluten = false;
+                        aktuellerSpieler.angst = false;
+                        if (zufallszahl(1, 5) == 1) {
+                          sendMessage(
+                            message.sender.id_str,
+                            "Du heilst dich +50🛡️!"
+                          );
+                        }
+                      } else {
+                        sendMessage(
+                          message.sender.id_str,
+                          "Nicht genügend 🏅Heldentaten, um dich darauf zu besinnen."
+                        );
+                      }
+                      break;
+
+                    case "/sturm":
                       if (
                         aktuellerSpieler.waffe &&
-                        (aktuellerSpieler.waffe.verbesserung || 0) < 1 &&
-                        aktuellerSpieler.kills > 0
+                        aktuellerSpieler.waffe.angriff > 10
                       ) {
-                        aktuellerSpieler.kills = aktuellerSpieler.kills - 1;
-                        aktuellerSpieler.waffe.verbesserung =
-                          (aktuellerSpieler.waffe.verbesserung || 0) + 1;
-                        aktuellerSpieler.waffe.maxSchaden =
-                          aktuellerSpieler.waffe.angriff +
-                          aktuellerSpieler.waffe.verbesserung * 50;
-
+                        aktuellerSpieler.waffe.sturm = true;
+                        if (aktuellerSpieler.waffe.ausweichen) {
+                          aktuellerSpieler.waffe.ausweichen = 20;
+                        }
                         sendMessage(
                           message.sender.id_str,
-                          "Mit der Kraft deiner Heldentat konntest du deine Waffe ⚔️ verbessern."
+                          "Alles auf eine Karte!"
+                        );
+                      } else if (aktuellerSpieler.waffe.angriff <= 10) {
+                        sendMessage(
+                          message.sender.id_str,
+                          "Deine Waffe hält eine solche Stärke nicht aus!"
+                        );
+                      }
+                      break;
+
+                    case "/beten":
+                    case "/bete":
+                      aktuellerSpieler.waffe = waffen[0];
+                      aktuellerSpieler.waffe.ausweichen = 2;
+                      sendMessage(
+                        message.sender.id_str,
+                        "Du wirfst deine Waffe im hohen Bogen weg, fängst an zu beten und hoffst Angriffen auszuweichen."
+                      );
+                      break;
+
+                    case "/lernen":
+                    case "/lerne":
+                      if (aktuellerSpieler.kills >= 5) {
+                        aktuellerSpieler.kills = aktuellerSpieler.kills - 5;
+                        aktuellerSpieler.waffe = waffen[13];
+                        sendMessage(
+                          message.sender.id_str,
+                          "Zisch! Licht ströhmt durch den Dungeon. Du hast 💫Sternenzauber gelernt!"
                         );
                       } else {
                         sendMessage(
                           message.sender.id_str,
-                          "Du kannst deine Waffen nicht weiter verbessern..."
+                          "Du liest spannende Zaubersprüche, leider hast du nicht genügend 🏅Heldentaten, um einen davon zu lernen."
                         );
                       }
-                    }
-                    break;
+                      break;
 
-                  case "/schild":
-                    // schild
-                    var kartenPunkt = koordinaten(
-                      aktuellerSpieler.x,
-                      aktuellerSpieler.y
-                    );
-                    if (kartenPunkt.type == "amboss") {
-                      if (
-                        aktuellerSpieler.kills > 0 &&
-                        aktuellerSpieler.leben < 150
-                      ) {
-                        aktuellerSpieler.leben = 150;
-                        aktuellerSpieler.kills = aktuellerSpieler.kills - 1;
-                        sendMessage(
-                          message.sender.id_str,
-                          "Mit dem Schild hast du 150🛡️ Gesundheit."
-                        );
-                      } else {
-                        sendMessage(
-                          message.sender.id_str,
-                          "Ohne Heldentaten kann ich nichts für dich tun..."
-                        );
+                    case "/löschmich":
+                      // spieler löschen!
+                      var alleSpieler = txtadv.spieler;
+                      for (var index = 0; index < alleSpieler.length; index++) {
+                        if (
+                          aktuellerSpieler.id_str == alleSpieler[index].id_str
+                        ) {
+                          sendMessage(
+                            aktuellerSpieler.id_str,
+                            "Du wurdest gelöscht. Um wieder zu spielen, benutze /start."
+                          );
+                          alleSpieler.splice(index, 1);
+                        }
                       }
-                    }
-                    break;
+                      break;
 
-                  case "/kampf":
-                  case "/kämpfen":
-                  case "/angriff":
-                    // kampf infos
-                    var kartenPunkt = koordinaten(
-                      aktuellerSpieler.x,
-                      aktuellerSpieler.y
-                    );
-                    var antwort =
-                      "Du kämpfst automatisch, wenn du ein Feld mit einem Gegner betrittst. Der Kampf findet alle 10 Minuten gegen den ersten Gegner in der Reihe statt.\n\n";
-                    if (fullInfo(aktuellerSpieler, "monster") == "") {
-                      antwort += "Hier befindet sich gerade kein Monster.\n";
-                    } else if (fullInfo(aktuellerSpieler, "monster") !== "") {
-                      antwort += fullInfo(aktuellerSpieler, "monster");
-                    }
-                    sendMessage(message.sender.id_str, antwort);
-                    break;
-
-                  case "/umsehen":
-                    // mehr infos
-                    var antwort = "";
-                    var mitspieler = spielerArray(
-                      aktuellerSpieler.x,
-                      aktuellerSpieler.y,
-                      aktuellerSpieler.id_str
-                    );
-                    if (mitspieler.length > 0) {
-                      antwort += "\n\nDu wirst von ";
-                      var namen = [];
-                      for (
-                        var index = 0;
-                        index < mitspieler.length;
-                        index++
-                      ) {
-                        namen.push("@" + mitspieler[index].screen_name);
-                      }
-                      antwort += namen.join(", ") + " unterstützt.\n";
-                    }
-                    var kartenPunkt = koordinaten(
-                      aktuellerSpieler.x,
-                      aktuellerSpieler.y
-                    );
-
-                    // loot?
-                    if (kartenPunkt.inhalt && kartenPunkt.type !== "truhe") {
-                      antwort +=
-                        "Hier liegt diese Waffe: " +
-                        waffenInfoText(waffen[kartenPunkt.inhalt]) +
-                        " Willst du sie /nehmen?";
-                    }
-                    sendMessage(
-                      message.sender.id_str,
-                      (kartenPunkt.text || "") +
-                        " " +
-                        fullInfo(aktuellerSpieler, "monster") +
-                        antwort +
-                        " " +
-                        fullInfo(aktuellerSpieler, "koords")
-                    );
-                    break;
-
-                  case "/ich":
-                    // aktuelle zustand des Spielers
-                    var antwort = "";
-                    if (aktuellerSpieler.bluten) {
-                      antwort += "😱 Überall Blut! ";
-                    }
-                    if (aktuellerSpieler.leben <= 50) {
-                      antwort +=
-                        "Du siehst geschwächt aus und hast noch " +
-                        aktuellerSpieler.leben +
-                        "🛡️.";
-                    } else {
-                      antwort +=
-                        "Deine Gesundheit: " + aktuellerSpieler.leben + "🛡️.";
-                    }
-                    if (aktuellerSpieler.amulett) {
-                      antwort += " Du trägst ein Amulett.\n";
-                    } else {
-                      antwort += "\n";
-                    }
-                    antwort += waffenInfoText(aktuellerSpieler.waffe) + "\n";
-                    antwort +=
-                      "Du hast " +
-                      (aktuellerSpieler.kills || 0) +
-                      "🏅 Heldentaten vollbracht.";
-                    //  und bist " + (aktuellerSpieler.tot || 0) + " mal gescheitert
-                    sendMessage(message.sender.id_str, antwort);
-                    break;
-
-                  case "/fähigkeiten":
-                  case "/fähigkeit":
-                    var alleFähigkeiten =
-                      "/heilen: Besinne dich auf deine 🏅Heldentaten und verarzte dich! Stoppt Blutungen! Du schaffst das.\n";
-                    alleFähigkeiten +=
-                      "/beten: 🙏 Wirf deine Waffe weg und bete, dass du diesen Kampf überlebst! -Waffe +1/2👤 +1/3💉.\n";
-                    alleFähigkeiten +=
-                      "/sturm: ⚔️ Du setzt alle Kraft in deinen Angriff. +10⚔️ Nutzt deine Waffe langsam ab.\n";
-                    sendMessage(message.sender.id_str, alleFähigkeiten);
-                    break;
-
-                  case "/heilen":
-                  case "/heile":
-                    if (aktuellerSpieler.kills >= 1) {
-                      aktuellerSpieler.kills = aktuellerSpieler.kills - 1;
-                      aktuellerSpieler.leben = aktuellerSpieler.leben + 50;
-                      aktuellerSpieler.bluten = false;
-                      aktuellerSpieler.angst = false;
-                      if (zufallszahl(1, 5) == 1) {
-                        sendMessage(
-                          message.sender.id_str,
-                          "Du heilst dich +50🛡️!"
-                        );
-                      }
-                    } else {
+                    default:
                       sendMessage(
                         message.sender.id_str,
-                        "Nicht genügend 🏅Heldentaten, um dich darauf zu besinnen."
+                        "Befehl nicht erkannt. Um alle Befehle zu lesen, sende /hilfe."
                       );
-                    }
-                    break;
-
-                  case "/sturm":
-                    if (
-                      aktuellerSpieler.waffe &&
-                      aktuellerSpieler.waffe.angriff > 10
-                    ) {
-                      aktuellerSpieler.waffe.sturm = true;
-                      if (aktuellerSpieler.waffe.ausweichen) {
-                        aktuellerSpieler.waffe.ausweichen = 20;
-                      }
-                      sendMessage(
-                        message.sender.id_str,
-                        "Alles auf eine Karte!"
-                      );
-                    } else if (aktuellerSpieler.waffe.angriff <= 10) {
-                      sendMessage(
-                        message.sender.id_str,
-                        "Deine Waffe hält eine solche Stärke nicht aus!"
-                      );
-                    }
-                    break;
-
-                  case "/beten":
-                  case "/bete":
-                    aktuellerSpieler.waffe = waffen[0];
-                    aktuellerSpieler.waffe.ausweichen = 2;
-                    sendMessage(
-                      message.sender.id_str,
-                      "Du wirfst deine Waffe im hohen Bogen weg, fängst an zu beten und hoffst Angriffen auszuweichen."
-                    );
-                    break;
-
-                  case "/lernen":
-                  case "/lerne":
-                    if (aktuellerSpieler.kills >= 5) {
-                      aktuellerSpieler.kills = aktuellerSpieler.kills - 5;
-                      aktuellerSpieler.waffe = waffen[13];
-                      sendMessage(
-                        message.sender.id_str,
-                        "Zisch! Licht ströhmt durch den Dungeon. Du hast 💫Sternenzauber gelernt!"
-                      );
-                    } else {
-                      sendMessage(
-                        message.sender.id_str,
-                        "Du liest spannende Zaubersprüche, leider hast du nicht genügend 🏅Heldentaten, um einen davon zu lernen."
-                      );
-                    }
-                    break;
-
-                  case "/löschmich":
-                    // spieler löschen!
-                    var alleSpieler = txtadv.spieler;
-                    for (var index = 0; index < alleSpieler.length; index++) {
-                      if (
-                        aktuellerSpieler.id_str == alleSpieler[index].id_str
-                      ) {
-                        sendMessage(
-                          aktuellerSpieler.id_str,
-                          "Du wurdest gelöscht. Um wieder zu spielen, benutze /start."
-                        );
-                        alleSpieler.splice(index, 1);
-                      }
-                    }
-                    break;
-
-                  default:
-                    sendMessage(message.sender.id_str, 'Befehl nicht erkannt. Um alle Befehle zu lesen, sende /hilfe.');
-                    break;
+                      break;
+                  }
+                } else {
+                  sendMessage(
+                    message.sender.id_str,
+                    "Befehl nicht erkannt. Bist du ein neuer Spieler oder bereits gestorben? Um neu zu starten, schreibe mir /start. Um alle Befehle zu lesen, tippe /hilfe."
+                  );
                 }
-              } else {
-                sendMessage(message.sender.id_str, 'Befehl nicht erkannt. Bist du ein neuer Spieler oder bereits gestorben? Um neu zu starten, schreibe mir /start. Um alle Befehle zu lesen, tippe /hilfe.');
+                // user closed
               }
-              // user closed
-            }
+            });
+          })
+          .catch(e => {
+            console.warn(e);
           });
-        })
-        .catch(e => {
-          console.warn(e);
-        });
       }
     }
   );
@@ -999,11 +1020,15 @@ function allgemeinerTimer() {
   var alleSpieler = txtadv.spieler;
   alleSpieler.forEach(function(spieler) {
     // heilung
-    if (!spieler.bluten && spieler.leben < 100 && zufallszahl(1, (spieler.waffe || {}).heilung) == 1) {
+    if (
+      !spieler.bluten &&
+      spieler.leben < 100 &&
+      zufallszahl(1, (spieler.waffe || {}).heilung) == 1
+    ) {
       spieler.leben = spieler.leben + 5;
       console.log(spieler.screen_name + " wurde geheilt +5 durch Waffe!");
     }
-    
+
     // stoppt blutung
     if (spieler.bluten && zufallszahl(1, 25) == 1) {
       spieler.bluten = false;
@@ -1068,7 +1093,7 @@ function allgemeinerTimer() {
       }
     }
   }
-  
+
   speichereDB();
   setTimeout(allgemeinerTimer, 6 * 60000);
 }
@@ -1272,8 +1297,10 @@ function kampf(geladenerSpieler) {
 
         // waffen verlieren kraft
         var waffeSchwach = false;
-        if (zufallszahl(1, 15) == 1
-          && (geladenerSpieler.waffe || {}).angriff >= 20) {
+        if (
+          zufallszahl(1, 15) == 1 &&
+          (geladenerSpieler.waffe || {}).angriff >= 20
+        ) {
           geladenerSpieler.waffe.angriff = geladenerSpieler.waffe.angriff - 1;
           if (
             geladenerSpieler.waffe.maxSchaden &&
