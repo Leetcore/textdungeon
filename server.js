@@ -488,7 +488,7 @@ function requestMessages() {
                 case "/help":
                   sendMessage(
                     message.sender.id_str,
-                    "Wenn du ein Feld mit Monstern betrittst kämpfst du automatisch gegen diese. Alle fünf Minuten findet ein Kampf statt. Bring dich bei schwacher Gesundheit in Sicherheit z.B. auf Felder mit Truhen, Zaubertischen oder dem Spawn. \nWeitere " +
+                    "Wenn du ein Feld mit Monstern betrittst kämpfst du automatisch gegen diese. Alle fünf Minuten findet ein Kampf statt. Bring dich bei schwacher Gesundheit in Sicherheit. \nWeitere " +
                       alleBefehle()
                   );
                   break;
@@ -1939,7 +1939,7 @@ function directionInfos(kartenPunkt, aktuellerSpieler) {
 }
 
 function alleBefehle() {
-  return "Befehle: /ich, /umsehen /gehe norden, /öffnen, /nehmen, /nutzen, /fähigkeiten.\n\nKeine Lust mehr? 😥 Sende /löschmich und höre auf.";
+  return "Befehle: /ich, /umsehen, /norden, /runter, /öffnen, /nehmen, /heilen, /nutzen, /fähigkeiten. Befehle werden auch ohne / erkannt. \n\nKeine Lust mehr? 😥 Sende /löschmich und höre auf.";
 }
 
 function neuerSpieler(id, idstr, screenname) {
