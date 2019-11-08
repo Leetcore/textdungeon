@@ -1449,6 +1449,7 @@ function kampf(geladenerSpieler) {
         }, 30 * 60000);
 
         gegnerSpawn();
+        break;
       }
 
       // monster gestorben???
@@ -1526,6 +1527,7 @@ function kampf(geladenerSpieler) {
             tempBuff.ragemode = false;
           }, 15 * 60000);
         }
+        
         sendMessage(
           geladenerSpieler.id_str,
           "🏆 Du warst stärker als " + monsters[index].name + "!" + loot
@@ -1648,29 +1650,22 @@ function bossSpawn() {
       ];
       var dieseZahl = zufallszahl(0, alleBosse.length - 1);
 
-      var calcmaxDamage = 30;
-      var maxPlayerDamage = txtadv.maxPlayerDamage;
-      if (maxPlayerDamage && maxPlayerDamage > calcmaxDamage) {
-        maxPlayerDamage = maxPlayerDamage - 10;
-        calcmaxDamage = maxPlayerDamage;
-      }
-
       var derBoss = new neuesMonster(
         alleBosse[dieseZahl].name,
         bossFelder[zufall].x,
         bossFelder[zufall].y,
-        zufallszahl(30, calcmaxDamage),
+        zufallszahl(15, 25),
         alleBosse[dieseZahl].spruch
       );
       derBoss.heilung = zufallszahl(5, 8);
       derBoss.ausweichen = zufallszahl(4, 8);
-      derBoss.leben = 300;
+      derBoss.leben = 250;
       derBoss.kritsch = zufallszahl(5, 8);
       derBoss.istBoss = true;
       derBoss.inhalt = waffen[zufallszahl(6, waffen.length - 1)].id;
       txtadv.monster.push(derBoss);
-
-      var maxGegnerSpawn = zufallszahl(calcmaxDamage - 20, calcmaxDamage);
+      
+      var maxGegnerSpawn = txtadv.spieler.length * 10;
       for (var gegnerZahl = 1; gegnerZahl < maxGegnerSpawn; gegnerZahl++) {
         gegnerSpawn();
       }
@@ -1778,7 +1773,7 @@ function gegnerSpawn(angriff, kritisch, ausweichen, x, y) {
       gegnerFelder[zufall].y,
       angriff || zufallszahl(5, 30),
       alleMonsterSTARK[dieseZahl].spruch,
-      zufallszahl(70, 150)
+      zufallszahl(70, 120)
     );
     zufallsMonsterSTARK.inhalt = waffen[zufallszahl(2, 5)].id;
     zufallsMonsterSTARK.ausweichen = ausweichen || zufallszahl(4, 8);
