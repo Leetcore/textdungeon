@@ -268,7 +268,6 @@ var txtadvDEFAULTs = {
 var kampfTimer = 5 * 60 * 1000;
 var DMTimer = 1 * 60 * 1000;
 var globalTimer = 5000;
-var allTimer = [];
 var tempBuff = {};
 
 var txtadv = txtadvDEFAULTs;
@@ -435,8 +434,6 @@ function requestMessages() {
             if (textInput.indexOf("/") < 0) {
               textInput = "/" + textInput;
             }
-
-            clearTimeout(allTimer[aktuellerSpieler.id_str]);
 
             console.log(
               "befehl = " + textInput + " von " + aktuellerSpieler.screen_name
@@ -610,7 +607,7 @@ function requestMessages() {
                       antwort +=
                         "Du hast eine Waffe gefunden! " +
                         waffenInfoText(waffen[kartenPunkt.inhalt]) +
-                        "\nDeine aktuelle Waffe ist stärker...";
+                        "\nDeine getragene Waffe ist stärker... Du kannst sie aber trotzdem /nehmen.";
                     }
                     sendMessage(message.sender.id_str, antwort);
                   } else {
@@ -734,7 +731,7 @@ function requestMessages() {
                       aktuellerSpieler.kills = aktuellerSpieler.kills - 1;
                       sendMessage(
                         message.sender.id_str,
-                        "Mit dem Schild hast du 150🛡️ Gesundheit."
+                        "Durch das Schild hast du 150🛡️ Gesundheit bekommen."
                       );
                     } else {
                       sendMessage(
@@ -843,11 +840,18 @@ function requestMessages() {
                 case "/heilen":
                 case "/heile":
                   if (aktuellerSpieler.kills >= 1) {
-                    aktuellerSpieler.kills = aktuellerSpieler.kills - 1;
-                    aktuellerSpieler.leben = aktuellerSpieler.leben + 50;
-                    aktuellerSpieler.bluten = false;
-                    aktuellerSpieler.waffe.heilung = 1;
-                    sendMessage(message.sender.id_str, "Du heilst dich +50🛡️!");
+                    if (aktuellerSpieler.leben >= 100) {
+                     sendMessage(
+                        message.sender.id_str,
+                        "Du bist gesund und fit. Du kannst dich nicht mehr heilen!"
+                      );
+                    } else {
+                      aktuellerSpieler.kills = aktuellerSpieler.kills - 1;
+                      aktuellerSpieler.leben = aktuellerSpieler.leben + 50;
+                      aktuellerSpieler.bluten = false;
+                      aktuellerSpieler.waffe.heilung = 1;
+                      sendMessage(message.sender.id_str, "Du heilst dich +50🛡️!");
+                    }
                   } else {
                     sendMessage(
                       message.sender.id_str,
@@ -934,8 +938,8 @@ function allgemeinerTimer() {
     if (mapPoint.type == "heiltrank") {
       var tempSpieler = spielerArray(mapPoint.x, mapPoint.y);
       tempSpieler.forEach(function(spieler) {
-        if (spieler.leben < 90) {
-          spieler.leben = spieler.leben + 10;
+        if (spieler.leben < 89) {
+          spieler.leben = spieler.leben + 1;
           console.log(
             spieler.screen_name + " wurde geheilt " + spieler.leben + "."
           );
@@ -998,19 +1002,6 @@ function allgemeinerTimer() {
         wegOptionen.push(westen);
       }
       if (wegOptionen.length > 0) {
-        var spieler = txtadv.spieler;
-        for (
-          var spielerIndex = 0;
-          spielerIndex < spieler.length;
-          spielerIndex++
-        ) {
-          if (
-            spieler[spielerIndex].x == monsters[index].x &&
-            spieler[spielerIndex].y == monsters[index].y
-          ) {
-            // sendMessage(spieler[spielerIndex].id_str, monsters[index].name + ' ist geflüchtet!')
-          }
-        }
         var weg = wegOptionen[zufallszahl(0, wegOptionen.length - 1)];
         if (weg) {
           console.log("monster bewegt sich: x" + weg.x + "y" + weg.y);
@@ -1023,7 +1014,7 @@ function allgemeinerTimer() {
 
   bossSpawn();
   speichereDB();
-  setTimeout(allgemeinerTimer, 2 * 60000);
+  setTimeout(allgemeinerTimer, 1 * 60000);
 }
 
 function calcFight() {
@@ -1168,9 +1159,6 @@ function kampf(geladenerSpieler) {
           " angriff = " +
           monsters[index].angriff
       );
-
-      // unterbrechen reisen!
-      clearTimeout(allTimer[geladenerSpieler.id_str]);
 
       var tempSchaden = monsters[index].angriff;
 
@@ -1425,7 +1413,7 @@ function kampf(geladenerSpieler) {
         tempBuff.ragemode = true;
         setTimeout(function() {
           tempBuff.ragemode = false;
-        }, 30 * 60000);
+        }, 10 * 60000);
 
         gegnerSpawn();
       }
@@ -1503,7 +1491,7 @@ function kampf(geladenerSpieler) {
           setTimeout(function() {
             console.log("rage mode off");
             tempBuff.ragemode = false;
-          }, 15 * 60000);
+          }, 5 * 60000);
         }
 
         sendMessage(
@@ -1790,7 +1778,7 @@ function gegnerSpawn(angriff, kritisch, ausweichen, x, y) {
       gegnerFelder[zufall].y,
       zufallszahl(3, 8),
       alleMonster[dieseZahl].spruch,
-      zufallszahl(40, 70)
+      zufallszahl(30, 60)
     );
     txtadv.monster.push(zufallsMonster);
   }
