@@ -165,7 +165,7 @@ var waffen = [
     id: 0,
     name: "👊 Nackte Fäuste",
     angriff: 10,
-    heilung: 1
+    heilung: 2
   },
   {
     id: 1,
@@ -284,7 +284,7 @@ fs.readFile(
       txtadv = JSON.parse(data);
       console.log("DB read!");
       if (typeof txtadv === "object") {
-        txtadv.karte = aktuelleKarte;
+        // txtadv.karte = aktuelleKarte;
 
         setTimeout(requestMessages, 60 * 1000);
         setTimeout(allgemeinerTimer, 1000);
@@ -627,7 +627,13 @@ function requestMessages() {
                     aktuellerSpieler.y
                   );
                   if (kartenPunkt.inhalt) {
-                    aktuellerSpieler.waffe = waffen[kartenPunkt.inhalt || 0];
+                    aktuellerSpieler.waffe = waffen[kartenPunkt.inhalt];
+                    if (
+                      kartenPunkt.type !== "truhe" &&
+                      zufallszahl(1, 3) == 1
+                    ) {
+                      kartenPunkt.inhalt = false;
+                    }
                     sendMessage(
                       message.sender.id_str,
                       "Du streckst stolz deine neue Waffe in die Luft. Mögen die Monster der Unterwelt vor deiner Kraft erzittern!"
@@ -647,7 +653,7 @@ function requestMessages() {
                   } else {
                     sendMessage(
                       message.sender.id_str,
-                      "Hier kannst du nichts nehmen. Versuch doch in der Zeit Monster zu töten und die Welt zu retten!"
+                      "Hier kannst du nichts nehmen. Vielleicht war jemand schneller als du..."
                     );
                   }
                   break;
@@ -761,6 +767,7 @@ function requestMessages() {
                   break;
 
                 case "/umsehen":
+                case "/sehen":
                   // mehr infos
                   var antwort = "";
                   var mitspieler = spielerArray(
@@ -788,6 +795,7 @@ function requestMessages() {
                       waffenInfoText(waffen[kartenPunkt.inhalt]) +
                       " Willst du sie /nehmen?";
                   }
+
                   sendMessage(
                     message.sender.id_str,
                     (kartenPunkt.text || "") +
@@ -800,6 +808,7 @@ function requestMessages() {
                   break;
 
                 case "/ich":
+                case "/status":
                   // aktuelle zustand des Spielers
                   var antwort = "";
                   if (aktuellerSpieler.bluten) {
@@ -828,20 +837,15 @@ function requestMessages() {
                   sendMessage(message.sender.id_str, antwort);
                   break;
 
-                case "/fähigkeiten":
-                case "/fähigkeit":
-                  var alleFähigkeiten =
-                    "/heilen: Besinne dich auf deine 🏅Heldentaten und verarzte dich! Stoppt Blutungen! Du schaffst das.\n";
-                  alleFähigkeiten +=
-                    "/beten: 🙏 Wirf deine Waffe weg und bete, dass du diesen Kampf überlebst!\n";
-                  sendMessage(message.sender.id_str, alleFähigkeiten);
-                  break;
-
                 case "/heilen":
                 case "/heile":
                   if (aktuellerSpieler.kills >= 1) {
                     if (aktuellerSpieler.leben >= 100) {
-                     sendMessage(
+                      aktuellerSpieler.bluten = false;
+                      if ((aktuellerSpieler.waffe || {}).heilung >= 3) {
+                        aktuellerSpieler.waffe.heilung = 3;  
+                      }
+                      sendMessage(
                         message.sender.id_str,
                         "Du bist gesund und fit. Du kannst dich nicht mehr heilen!"
                       );
@@ -849,8 +853,13 @@ function requestMessages() {
                       aktuellerSpieler.kills = aktuellerSpieler.kills - 1;
                       aktuellerSpieler.leben = aktuellerSpieler.leben + 50;
                       aktuellerSpieler.bluten = false;
-                      aktuellerSpieler.waffe.heilung = 1;
-                      sendMessage(message.sender.id_str, "Du heilst dich +50🛡️!");
+                      if ((aktuellerSpieler.waffe || {}).heilung >= 3) {
+                        aktuellerSpieler.waffe.heilung = 3;  
+                      }
+                      sendMessage(
+                        message.sender.id_str,
+                        "Du heilst dich +50🛡️!"
+                      );
                     }
                   } else {
                     sendMessage(
@@ -959,15 +968,10 @@ function allgemeinerTimer() {
     ) {
       spieler.leben = spieler.leben + 10;
       console.log(spieler.screen_name + " wurde geheilt +10 durch Waffe!");
-      // stoppt blutung
-      if (spieler.bluten && zufallszahl(1, 6) == 1) {
-        spieler.bluten = false;
-        console.log(spieler.screen_name + " hat Blutung gestoppt!");
-      }
     }
 
     // stoppt blutung
-    if (spieler.bluten && zufallszahl(1, 15) == 1) {
+    if (spieler.bluten && zufallszahl(0, (spieler.waffe || {}).heilung) == 1) {
       spieler.bluten = false;
       console.log(spieler.screen_name + " hat Blutung gestoppt!");
     }
@@ -1423,13 +1427,6 @@ function kampf(geladenerSpieler) {
         // loot
         if (monsters[index].inhalt) {
           kartenPunkt.inhalt = monsters[index].inhalt;
-          setTimeout(
-            function(kartenPunkt) {
-              kartenPunkt.inhalt = false;
-            },
-            60 * 60000,
-            kartenPunkt
-          );
         }
         var loot = "";
         if (kartenPunkt.inhalt) {
@@ -1866,7 +1863,9 @@ function sendMessage(id, text) {
       },
       function(error, message, response) {
         if (error) {
-          globalTimer = globalTimer + globalTimer;
+          if (globalTimer < 25000) {
+            globalTimer = globalTimer + globalTimer;
+          }
           console.warn(error);
         } else {
           console.log(text);
@@ -1898,7 +1897,7 @@ function directionInfos(kartenPunkt, aktuellerSpieler) {
 }
 
 function alleBefehle() {
-  return "Befehle: /ich, /umsehen, /norden, /runter, /öffnen, /nehmen, /heilen, /nutzen, /fähigkeiten. Befehle werden auch ohne / erkannt. \n\nKeine Lust mehr? 😥 Sende /löschmich und höre auf.";
+  return "Befehle: /ich, /umsehen, /norden, /runter, /öffnen, /nehmen, /heilen, /beten, /nutzen. Befehle werden auch ohne / erkannt. \n\nKeine Lust mehr? 😥 Sende /löschmich und höre auf.";
 }
 
 function neuerSpieler(id, idstr, screenname) {
