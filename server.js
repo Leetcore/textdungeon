@@ -101,10 +101,10 @@ var aktuelleKarte = [
     text: "Dunkelheit, Dreck und Monstergeschrei!"
   },
   {
-    type: "feld",
+    type: "altar",
     x: 4,
     y: 4,
-    text: "Hier sind Schädel gestapelt. Pass besser auf deinen Kopf auf!"
+    text: "Überall hörst du Monster! Moment, da liegt doch etwas?! /nehmen?"
   },
   {
     type: "feld",
@@ -160,65 +160,64 @@ var aktuelleKarte = [
     text: "☠️ Der Thron des Bossgegner! Du hast ihn gefunden..."
   }
 ];
-
 var waffen = [
   {
     id: 0,
     name: "👊 Nackte Fäuste",
     angriff: 10,
-    heilung: 2
+    heilung: 1
   },
   {
     id: 1,
     name: "🗡️ Kleines Anfängerschwert",
-    angriff: 14,
+    angriff: 15,
     heilung: 2,
-    kritisch: 4
+    kritisch: 2
   },
   {
     id: 2,
     name: "🔧 Alter Schraubenschlüssel",
     angriff: 25,
-    kritisch: 3
+    kritisch: 2
   },
   {
     id: 3,
     name: "🎯 Tasche mit Dartpfeilen",
-    angriff: 18,
-    ausweichen: 3
+    angriff: 25,
+    ausweichen: 2
   },
   {
     id: 4,
     name: "🏒 Blutiger Eishockeyschläger",
     angriff: 30,
-    kritisch: 4
+    kritisch: 2
   },
   {
     id: 5,
     name: "🥁 Trommel des Todes",
     angriff: 40,
-    kritisch: 3
+    kritisch: 2
   },
   {
     id: 6,
     name: "💣 Handliche Bomben",
     angriff: 50,
     ausweichen: 4,
-    kritisch: 3
+    kritisch: 2
   },
   {
     id: 7,
     name: "🏹 Geschickter Bogen",
     angriff: 45,
     ausweichen: 4,
-    kritisch: 3
+    kritisch: 2
   },
   {
     id: 8,
     name: "📿 Gesegnete Gebetskette",
     angriff: 38,
-    heilung: 2,
-    kritisch: 4,
+    heilung: 1,
+    kritisch: 3,
     ausweichen: 3
   },
   {
@@ -226,6 +225,7 @@ var waffen = [
     name: "💍 Magischer Ring",
     angriff: 40,
     ausweichen: 3,
+    kritisch: 3,
     heilung: 5
   },
   {
@@ -233,27 +233,27 @@ var waffen = [
     name: "🏹 Göttlicher Bogen",
     angriff: 45,
     ausweichen: 4,
-    heilung: 4,
-    kritisch: 4
+    heilung: 2,
+    kritisch: 2
   },
   {
     id: 11,
     name: "🌂 Spitzer Regenschirm",
     angriff: 40,
-    kritisch: 5
+    kritisch: 2
   },
   {
     id: 12,
     name: "🔱 Neptuns Dreizack",
     angriff: 80,
-    kritisch: 3
+    kritisch: 2
   },
   {
     id: 13,
     name: "☄️ Brennende Zauberkraft",
-    angriff: 20,
+    angriff: 25,
     ausweichen: 4,
-    heilung: 10
+    heilung: 3
   }
 ];
 
@@ -666,7 +666,7 @@ function requestMessages() {
                     kartenPunkt.type == "heiltrank" &&
                     aktuellerSpieler.leben < 100
                   ) {
-                    aktuellerSpieler.leben = 80;
+                    aktuellerSpieler.leben = 100;
                     sendMessage(
                       message.sender.id_str,
                       "Du nimmst einen großen Schluck und fühlst dich etwas besser. " +
@@ -841,12 +841,8 @@ function requestMessages() {
                     aktuellerSpieler.kills = aktuellerSpieler.kills - 1;
                     aktuellerSpieler.leben = aktuellerSpieler.leben + 50;
                     aktuellerSpieler.bluten = false;
-                    if (zufallszahl(1, 5) == 1) {
-                      sendMessage(
-                        message.sender.id_str,
-                        "Du heilst dich +50🛡️!"
-                      );
-                    }
+                    aktuellerSpieler.waffe.heilung = 1;
+                    sendMessage(message.sender.id_str, "Du heilst dich +50🛡️!");
                   } else {
                     sendMessage(
                       message.sender.id_str,
@@ -968,8 +964,8 @@ function allgemeinerTimer() {
       spieler.leben <= 95 &&
       zufallszahl(1, (spieler.waffe || {}).heilung) == 1
     ) {
-      spieler.leben = spieler.leben + 5;
-      console.log(spieler.screen_name + " wurde geheilt +5 durch Waffe!");
+      spieler.leben = spieler.leben + 10;
+      console.log(spieler.screen_name + " wurde geheilt +10 durch Waffe!");
     }
 
     // stoppt blutung
@@ -1216,7 +1212,7 @@ function kampf(geladenerSpieler) {
 
           if (
             zufallszahl(1, 15) == 1 &&
-            (geladenerSpieler.waffe || {}).angriff >= 13
+            (geladenerSpieler.waffe || {}).angriff >= 23
           ) {
             kritischerTextMonster +=
               "Vor Schreck hast du deine Waffe fallen lassen. Sie ist etwas ramponiert -3⚔️.\n";
@@ -1229,18 +1225,11 @@ function kampf(geladenerSpieler) {
         var waffeSchwach = false;
         if (
           zufallszahl(1, 15) == 1 &&
-          (geladenerSpieler.waffe || {}).angriff >= 20
+          geladenerSpieler.waffe.angriff <
+            geladenerSpieler.waffe.maxSchaden - 20
         ) {
-          geladenerSpieler.waffe.angriff = geladenerSpieler.waffe.angriff - 1;
-          if (
-            geladenerSpieler.waffe.maxSchaden &&
-            geladenerSpieler.waffe.angriff + 11 <
-              geladenerSpieler.waffe.maxSchaden
-          ) {
-            geladenerSpieler.waffe.maxSchaden =
-              geladenerSpieler.waffe.maxSchaden - 5;
-          }
-          console.log(geladenerSpieler.screen_name + " waffe schaden -1");
+          geladenerSpieler.waffe.maxSchaden--;
+          console.log(geladenerSpieler.screen_name + " waffe maxschaden -1");
           waffeSchwach = true;
         }
         if (
@@ -1261,15 +1250,16 @@ function kampf(geladenerSpieler) {
           waffeSchwach = true;
         }
         if (
+          !geladenerSpieler.amulett &&
           zufallszahl(1, 15) == 1 &&
-          (geladenerSpieler.waffe || {}).heilung < 12
+          (geladenerSpieler.waffe || {}).heilung < 11
         ) {
           geladenerSpieler.waffe.heilung = geladenerSpieler.waffe.heilung + 1;
           console.log(geladenerSpieler.screen_name + " waffe heilung -1");
           waffeSchwach = true;
         }
         if (waffeSchwach) {
-          kritischerTextMonster += "Deine Waffe ist abgenutzt...\n";
+          kritischerTextMonster += "Deine Waffe nutzt sich langsam ab...\n";
         }
         geladenerSpieler.leben = geladenerSpieler.leben - tempSchaden;
         var auaTexte = [
@@ -1312,11 +1302,6 @@ function kampf(geladenerSpieler) {
           aktSchaden = aktSchaden + 10;
           kritischerText +=
             "🔥 Kritischer Treffer! Du machst starken Schaden.\n";
-        }
-
-        // bossschaden an spielerschaden orientieren
-        if (aktSchaden > (txtadv.maxPlayerDamage || 0)) {
-          txtadv.maxPlayerDamage = aktSchaden;
         }
 
         monsters[index].leben = (monsters[index].leben || 0) - aktSchaden;
@@ -1527,7 +1512,7 @@ function kampf(geladenerSpieler) {
             tempBuff.ragemode = false;
           }, 15 * 60000);
         }
-        
+
         sendMessage(
           geladenerSpieler.id_str,
           "🏆 Du warst stärker als " + monsters[index].name + "!" + loot
@@ -1582,9 +1567,7 @@ function kampf(geladenerSpieler) {
           console.log("monster dauerhaft tot!");
         }
       }
-      if (!tempBuff.ragemode) {
-        break;
-      }
+      break;
     }
   }
 }
@@ -1659,12 +1642,12 @@ function bossSpawn() {
       );
       derBoss.heilung = zufallszahl(5, 8);
       derBoss.ausweichen = zufallszahl(4, 8);
-      derBoss.leben = 250;
+      derBoss.leben = 200;
       derBoss.kritsch = zufallszahl(5, 8);
       derBoss.istBoss = true;
       derBoss.inhalt = waffen[zufallszahl(6, waffen.length - 1)].id;
       txtadv.monster.push(derBoss);
-      
+
       var maxGegnerSpawn = txtadv.spieler.length * 10;
       for (var gegnerZahl = 1; gegnerZahl < maxGegnerSpawn; gegnerZahl++) {
         gegnerSpawn();
@@ -1771,9 +1754,9 @@ function gegnerSpawn(angriff, kritisch, ausweichen, x, y) {
       alleMonsterSTARK[dieseZahl].name,
       gegnerFelder[zufall].x,
       gegnerFelder[zufall].y,
-      angriff || zufallszahl(5, 30),
+      angriff || zufallszahl(3, 10),
       alleMonsterSTARK[dieseZahl].spruch,
-      zufallszahl(70, 120)
+      zufallszahl(50, 100)
     );
     zufallsMonsterSTARK.inhalt = waffen[zufallszahl(2, 5)].id;
     zufallsMonsterSTARK.ausweichen = ausweichen || zufallszahl(4, 8);
@@ -1812,7 +1795,7 @@ function gegnerSpawn(angriff, kritisch, ausweichen, x, y) {
       alleMonster[dieseZahl].name,
       gegnerFelder[zufall].x,
       gegnerFelder[zufall].y,
-      zufallszahl(3, 6),
+      zufallszahl(3, 8),
       alleMonster[dieseZahl].spruch,
       zufallszahl(40, 70)
     );
