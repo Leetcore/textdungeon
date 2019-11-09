@@ -60,7 +60,7 @@
   <body>
     <header>
       <h1>
-        Twitter Textadventure
+        Twitter Dungeon Crawler
       </h1>
     </header>
 
@@ -69,30 +69,31 @@
       <p>
         Ein Dungeon Crawler in Twitter. Alle Befehle werden per privater Nachricht an <a href="https://twitter.com/TextDungeon">@TextDungeon</a> geschickt. Mit /start per privater Nachricht kannst du anfangen und dich im Dungeon bewegen. Es gibt Waffen zu finden, Heiltränke zu trinken und seltene Bosse zu besiegen!
       </p>
-      <p>
+      <small>
         Die Nachrichten werden jede Minute gelesen.
-      </p>
+      </small>
       <h2>
         Die Karte
       </h2>
-      <p>Zur Orientierung: Der Spawn (x1y1) ist oben links.</p>
+      <small>Zur Orientierung: Der Spawn (x1y1) ist oben links.</small>
       <div id="karte"></div>
       Spielerstatistik: <input type="text" id="playerSearch" autofocus placeholder="@twittername" onchange="searchPlayer(this.value)" list="alleSpieler"/>
       <datalist id="alleSpieler"></datalist>
       <div id="stats"></div>
       <h2>Alle Befehle</h2>
         <ul>
-            <li>start</li>
+            <li>start = Beginnt das Spiel (Respawn nach dem Tod)</li>
             <li>hilfe = Die Kurzhilfe.</li>
-            <li>links = Im Dungeon bewegen. (Kurzbefehle)</li>
+            <li>links = Im Dungeon bewegen.</li>
             <li>rechts = Im Dungeon bewegen.</li>
             <li>hoch = Im Dungeon bewegen.</li>
             <li>runter = Im Dungeon bewegen.</li>
             <li>umsehen = Was siehst du? Wob ist du?</li>
-            <li>fähigkeiten = Was kannst du einsetzen? /heilen und /beten</li>
-            <li>nehmen = Gegenstände auf dem Boden oder aus einer Truhen nehmen und ausrüsten.</li>
+            <li>heilen = Heilt dich direkt um +10🛡️, wenn du vorher eine Heldentat vollbracht hast!</li>
+            <li>beten = Wirf deine Waffe weg und hoffe darauf, den nächsten Angriffen auszuweichen</li>
+            <li>trinken = Heiltrank am Tisch trinken.</li>
             <li>öffnen = Truhen öffnen.</li>
-            <li>benutzen = Heiltrank am Tisch benutzen.</li>
+            <li>nehmen = Gegenstände auf dem Boden oder aus einer Truhen nehmen und ausrüsten.</li>
           </ul>
       <h2>
         Allgemeine Infos
@@ -103,7 +104,7 @@
         Um den Kampf zu beenden, LAUF WEG!!!
       </p>
       <p>
-        Es gibt besondere Waffen, die dich heilen können z.B. 💍 Magischer Ring und Waffen, die einem Angriff ausweichen können z.B. 🏹 Geschickter Bogen.
+        Es gibt Waffen, die dich heilen können z.B. 💍 Magischer Ring und Waffen, die einem Angriff ausweichen können z.B. 🏹 Geschickter Bogen.
       </p>
       <p>
         Achtung: Bossgegner sind besonders stark und erscheinen nur auf roten Bossfeldern!

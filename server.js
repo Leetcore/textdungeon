@@ -184,7 +184,8 @@ var waffen = [
     id: 3,
     name: "🎯 Tasche mit Dartpfeilen",
     angriff: 25,
-    ausweichen: 2
+    ausweichen: 2,
+    kritisch: 3
   },
   {
     id: 4,
@@ -251,9 +252,10 @@ var waffen = [
   {
     id: 13,
     name: "☄️ Brennende Zauberkraft",
-    angriff: 25,
-    ausweichen: 4,
-    heilung: 3
+    angriff: 40,
+    kritisch: 2,
+    ausweichen: 2,
+    heilung: 5
   }
 ];
 
@@ -657,6 +659,9 @@ function requestMessages() {
                 case "/benutze":
                 case "/nutzen":
                 case "/nutze":
+                case "/trinken":
+                case "/trinke":
+                case "/trink":
                   // gegenstand benutzen
                   var kartenPunkt = koordinaten(
                     aktuellerSpieler.x,
@@ -831,7 +836,7 @@ function requestMessages() {
                   var alleFähigkeiten =
                     "/heilen: Besinne dich auf deine 🏅Heldentaten und verarzte dich! Stoppt Blutungen! Du schaffst das.\n";
                   alleFähigkeiten +=
-                    "/beten: 🙏 Wirf deine Waffe weg und bete, dass du diesen Kampf überlebst! -Waffe +1/2👤 +1/3💉.\n";
+                    "/beten: 🙏 Wirf deine Waffe weg und bete, dass du diesen Kampf überlebst!\n";
                   sendMessage(message.sender.id_str, alleFähigkeiten);
                   break;
 
@@ -1434,7 +1439,6 @@ function kampf(geladenerSpieler) {
         }, 30 * 60000);
 
         gegnerSpawn();
-        break;
       }
 
       // monster gestorben???
@@ -1754,11 +1758,11 @@ function gegnerSpawn(angriff, kritisch, ausweichen, x, y) {
       alleMonsterSTARK[dieseZahl].name,
       gegnerFelder[zufall].x,
       gegnerFelder[zufall].y,
-      angriff || zufallszahl(3, 10),
+      zufallszahl(3, 10),
       alleMonsterSTARK[dieseZahl].spruch,
       zufallszahl(50, 100)
     );
-    zufallsMonsterSTARK.inhalt = waffen[zufallszahl(2, 5)].id;
+    zufallsMonsterSTARK.inhalt = waffen[zufallszahl(2, 8)].id;
     zufallsMonsterSTARK.ausweichen = ausweichen || zufallszahl(4, 8);
     zufallsMonsterSTARK.heilung = zufallszahl(5, 10);
     zufallsMonsterSTARK.kritisch = kritisch || zufallszahl(5, 10);
