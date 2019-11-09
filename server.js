@@ -288,7 +288,7 @@ fs.readFile(
         txtadv.karte = aktuelleKarte;
 
         setTimeout(requestMessages, 60 * 1000);
-        setTimeout(allgemeinerTimer, 60 * 1000);
+        setTimeout(allgemeinerTimer, 1000);
         setTimeout(calcFight, kampfTimer);
       }
     } catch (e) {
@@ -924,24 +924,8 @@ function requestMessages() {
 
 function allgemeinerTimer() {
   // glückstruhe
-  if (koordinaten(8, 0).inhalt && zufallszahl(1, 360) == 1) {
-    koordinaten(8, 0).inhalt = waffen[zufallszahl(2, 5)].id;
-    var texte = [
-      "🍀 Ein Hauch des Zaubers weht durch den Dungeon.",
-      "🍀 Die Glückstruhe hat eine andere Waffe ausgewählt!",
-      "🍀 Neue Waffe, neues Glück!"
-    ];
-    client.post(
-      "statuses/update",
-      {
-        status: texte[zufallszahl(0, texte.length - 1)]
-      },
-      function(error, tweet, response) {
-        if (error) {
-          console.log(error);
-        }
-      }
-    );
+  if (koordinaten(6, 1).inhalt && zufallszahl(1, 10) == 1) {
+    koordinaten(6, 1).inhalt = waffen[zufallszahl(2, 8)].id;
   }
 
   // spieler langsam heilen
@@ -1037,8 +1021,9 @@ function allgemeinerTimer() {
     }
   }
 
+  bossSpawn();
   speichereDB();
-  setTimeout(allgemeinerTimer, 6 * 60000);
+  setTimeout(allgemeinerTimer, 2 * 60000);
 }
 
 function calcFight() {
@@ -1047,7 +1032,6 @@ function calcFight() {
   for (var spielerIndex = 0; spielerIndex < spieler.length; spielerIndex++) {
     kampf(spieler[spielerIndex]);
   }
-  bossSpawn();
   setTimeout(calcFight, kampfTimer);
 }
 
@@ -1244,8 +1228,8 @@ function kampf(geladenerSpieler) {
           waffeSchwach = true;
         }
         if (
-          zufallszahl(1, 15) == 1 &&
-          (geladenerSpieler.waffe || {}).ausweichen < 9
+          zufallszahl(1, 10) == 1 &&
+          (geladenerSpieler.waffe || {}).ausweichen < 5
         ) {
           geladenerSpieler.waffe.ausweichen =
             geladenerSpieler.waffe.ausweichen + 1;
@@ -1254,7 +1238,7 @@ function kampf(geladenerSpieler) {
         }
         if (
           zufallszahl(1, 15) == 1 &&
-          (geladenerSpieler.waffe || {}).kritisch < 9
+          (geladenerSpieler.waffe || {}).kritisch < 5
         ) {
           geladenerSpieler.waffe.kritisch = geladenerSpieler.waffe.kritisch + 1;
           console.log(geladenerSpieler.screen_name + " waffe kritisch -1");
@@ -1263,7 +1247,7 @@ function kampf(geladenerSpieler) {
         if (
           !geladenerSpieler.amulett &&
           zufallszahl(1, 15) == 1 &&
-          (geladenerSpieler.waffe || {}).heilung < 11
+          (geladenerSpieler.waffe || {}).heilung < 7
         ) {
           geladenerSpieler.waffe.heilung = geladenerSpieler.waffe.heilung + 1;
           console.log(geladenerSpieler.screen_name + " waffe heilung -1");
@@ -1582,7 +1566,7 @@ function kampf(geladenerSpieler) {
 }
 
 function bossSpawn() {
-  if (zufallszahl(1, 10) == 1) {
+  if (zufallszahl(1, 20) == 1) {
     // big boss
     var map = txtadv.karte;
     var bossFelder = [];
@@ -1657,7 +1641,7 @@ function bossSpawn() {
       derBoss.inhalt = waffen[zufallszahl(6, waffen.length - 1)].id;
       txtadv.monster.push(derBoss);
 
-      var maxGegnerSpawn = txtadv.spieler.length * 10;
+      var maxGegnerSpawn = txtadv.spieler.length * 20;
       for (var gegnerZahl = 1; gegnerZahl < maxGegnerSpawn; gegnerZahl++) {
         gegnerSpawn();
       }
