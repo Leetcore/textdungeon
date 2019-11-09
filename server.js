@@ -645,7 +645,7 @@ function requestMessages() {
                     (aktuellerSpieler.waffe || {}).heilung = 2;
                     sendMessage(
                       message.sender.id_str,
-                      "Du hast ein Amulett der Heilung gefunden!"
+                      "Du hast ein Amulett der Heilung gefunden. ☘️ Damit kann deine Heilkraft nicht mehr geschwächt werden!"
                     );
                   } else {
                     sendMessage(
@@ -966,15 +966,20 @@ function allgemeinerTimer() {
     // heilung
     if (
       !spieler.bluten &&
-      spieler.leben <= 95 &&
+      spieler.leben <= 90 &&
       zufallszahl(1, (spieler.waffe || {}).heilung) == 1
     ) {
       spieler.leben = spieler.leben + 10;
       console.log(spieler.screen_name + " wurde geheilt +10 durch Waffe!");
+      // stoppt blutung
+      if (spieler.bluten && zufallszahl(1, 6) == 1) {
+        spieler.bluten = false;
+        console.log(spieler.screen_name + " hat Blutung gestoppt!");
+      }
     }
 
     // stoppt blutung
-    if (spieler.bluten && zufallszahl(1, 25) == 1) {
+    if (spieler.bluten && zufallszahl(1, 15) == 1) {
       spieler.bluten = false;
       console.log(spieler.screen_name + " hat Blutung gestoppt!");
     }
@@ -1200,14 +1205,14 @@ function kampf(geladenerSpieler) {
 
         var kritischerTextMonster = "";
         if (zufallszahl(1, monsters[index].kritisch || 25) == 1) {
-          tempSchaden = tempSchaden + 10;
+          tempSchaden = tempSchaden + 5;
           kritischerTextMonster = "⚡ Du wurdest stark getroffen!\n";
           console.log(geladenerSpieler.screen_name + " mehr schaden");
 
           // bluten
-          if (zufallszahl(1, 10) == 1) {
+          if (zufallszahl(1, 5) == 1) {
             kritischerTextMonster =
-              "⚡🩸 Du wurdest stark getroffen und blutest!\n";
+              "⚡🩸 Du wurdest stark getroffen und blutest! Das verhindert deine automatische Regeneration.\n";
             geladenerSpieler.bluten = true;
             console.log(
               geladenerSpieler.screen_name +
@@ -1229,6 +1234,7 @@ function kampf(geladenerSpieler) {
         // waffen verlieren kraft
         var waffeSchwach = false;
         if (
+          geladenerSpieler.waffe.maxSchaden &&
           zufallszahl(1, 15) == 1 &&
           geladenerSpieler.waffe.angriff <
             geladenerSpieler.waffe.maxSchaden - 20
@@ -1239,7 +1245,7 @@ function kampf(geladenerSpieler) {
         }
         if (
           zufallszahl(1, 15) == 1 &&
-          (geladenerSpieler.waffe || {}).ausweichen < 20
+          (geladenerSpieler.waffe || {}).ausweichen < 9
         ) {
           geladenerSpieler.waffe.ausweichen =
             geladenerSpieler.waffe.ausweichen + 1;
@@ -1248,7 +1254,7 @@ function kampf(geladenerSpieler) {
         }
         if (
           zufallszahl(1, 15) == 1 &&
-          (geladenerSpieler.waffe || {}).kritisch < 15
+          (geladenerSpieler.waffe || {}).kritisch < 9
         ) {
           geladenerSpieler.waffe.kritisch = geladenerSpieler.waffe.kritisch + 1;
           console.log(geladenerSpieler.screen_name + " waffe kritisch -1");
@@ -1284,7 +1290,7 @@ function kampf(geladenerSpieler) {
         kampfInfo +=
           kritischerTextMonster +
           spruch +
-          "\nDeine Gesundheit fällt auf " +
+          "\nDeine Gesundheit liegt bei " +
           geladenerSpieler.leben +
           "🛡️.\n";
       }
@@ -1304,7 +1310,7 @@ function kampf(geladenerSpieler) {
           geladenerSpieler.waffe.maxSchaden || geladenerSpieler.waffe.angriff
         );
         if (zufallszahl(1, geladenerSpieler.waffe.kritisch || 40) == 1) {
-          aktSchaden = aktSchaden + 10;
+          aktSchaden = aktSchaden + 25;
           kritischerText +=
             "🔥 Kritischer Treffer! Du machst starken Schaden.\n";
         }
@@ -1344,8 +1350,7 @@ function kampf(geladenerSpieler) {
 
       // monster heilung
       if (
-        !monsters[index].bluten &&
-        monsters[index].leben <= 30 &&
+        monsters[index].leben <= 20 &&
         monsters[index].leben > 0 &&
         zufallszahl(1, monsters[index].heilung || 15) == 1
       ) {
@@ -1356,8 +1361,8 @@ function kampf(geladenerSpieler) {
 
       // wenig energie warnung
       if (
-        geladenerSpieler.leben <= 10 &&
-        geladenerSpieler.leben > 0 &&
+        geladenerSpieler.leben <= 40 &&
+        geladenerSpieler.leben > 10 &&
         zufallszahl(1, 5) == 1
       ) {
         console.log("wenig energie warnung");

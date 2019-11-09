@@ -204,7 +204,14 @@
           }
           if ((spieler.waffe || {}).heilung) {
             zusatzInfos += " 1/"+ (spieler.waffe || {}).heilung +"💉"
+            if (spieler.amulett) {
+              zusatzInfos += "🔒"
+            }
           }
+          if (spieler.bluten) {
+            zusatzInfos += "🩸"
+          }
+          
           var maxSchaden = ''
           if ((spieler.waffe || {}).maxSchaden) { 
             maxSchaden = ' - ' + spieler.waffe.maxSchaden
