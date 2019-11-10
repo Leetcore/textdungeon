@@ -33,7 +33,7 @@ var aktuelleKarte = [
     x: 1,
     y: 4,
     text:
-      "🛠️ Eine kleine Schmiede mit Amboss. Der Ofen glüht noch und es gibt auch einige Zauberbücher. Du könntest versuchen deine Waffe zu /verbessern oder einen Zauberspruch /lernen. Zur Verteidigung gibt es ein mächtiges /Schild für eine Heldentat. Es gibt dir 150🛡️ Gesundheit."
+      "🛠️ Eine kleine Schmiede mit Amboss. Der Ofen glüht noch und es gibt auch einige Zauberbücher. Du kannst für 5 Heldendaten einen Zauberspruch /lernen oder zur Verteidigung ein /Schild schmieden im Austausch für eine Heldentat. Das Schild gibt dir 150🛡️ Gesundheit."
   },
   {
     type: "truhe",
@@ -104,7 +104,8 @@ var aktuelleKarte = [
     type: "altar",
     x: 4,
     y: 4,
-    text: "Überall hörst du Monster! Moment, da liegt doch etwas?! /nehmen?"
+    text:
+      "Überall hörst du Monster! Moment, da glitzert etwas im Dreck! /nehmen?"
   },
   {
     type: "feld",
@@ -511,7 +512,7 @@ function requestMessages() {
                   } else {
                     sendMessage(
                       message.sender.id_str,
-                      eineWand() + " Willst du dich /umsehen?"
+                      eineWand()
                     );
                   }
                   break;
@@ -534,7 +535,7 @@ function requestMessages() {
                   } else {
                     sendMessage(
                       message.sender.id_str,
-                      eineWand() + " Willst du dich /umsehen?"
+                      eineWand()
                     );
                   }
                   break;
@@ -558,7 +559,7 @@ function requestMessages() {
                   } else {
                     sendMessage(
                       message.sender.id_str,
-                      eineWand() + " Willst du dich /umsehen?"
+                      eineWand()
                     );
                   }
                   break;
@@ -581,7 +582,7 @@ function requestMessages() {
                   } else {
                     sendMessage(
                       message.sender.id_str,
-                      eineWand() + " Willst du dich /umsehen?"
+                      eineWand()
                     );
                   }
                   break;
@@ -689,39 +690,6 @@ function requestMessages() {
                   }
                   break;
 
-                case "/verbessern":
-                case "/amboss":
-                  // waffe verbessern
-                  var kartenPunkt = koordinaten(
-                    aktuellerSpieler.x,
-                    aktuellerSpieler.y
-                  );
-                  if (kartenPunkt.type == "amboss") {
-                    if (
-                      aktuellerSpieler.waffe &&
-                      (aktuellerSpieler.waffe.verbesserung || 0) < 1 &&
-                      aktuellerSpieler.kills > 0
-                    ) {
-                      aktuellerSpieler.kills = aktuellerSpieler.kills - 1;
-                      aktuellerSpieler.waffe.verbesserung =
-                        (aktuellerSpieler.waffe.verbesserung || 0) + 1;
-                      aktuellerSpieler.waffe.maxSchaden =
-                        aktuellerSpieler.waffe.angriff +
-                        aktuellerSpieler.waffe.verbesserung * 50;
-
-                      sendMessage(
-                        message.sender.id_str,
-                        "Mit der Kraft deiner Heldentat konntest du deine Waffe ⚔️ verbessern."
-                      );
-                    } else {
-                      sendMessage(
-                        message.sender.id_str,
-                        "Du kannst deine Waffen nicht weiter verbessern..."
-                      );
-                    }
-                  }
-                  break;
-
                 case "/schild":
                   // schild
                   var kartenPunkt = koordinaten(
@@ -731,13 +699,13 @@ function requestMessages() {
                   if (kartenPunkt.type == "amboss") {
                     if (
                       aktuellerSpieler.kills > 0 &&
-                      aktuellerSpieler.leben < 150
+                      aktuellerSpieler.leben < 180
                     ) {
-                      aktuellerSpieler.leben = 150;
+                      aktuellerSpieler.leben = 180;
                       aktuellerSpieler.kills = aktuellerSpieler.kills - 1;
                       sendMessage(
                         message.sender.id_str,
-                        "Durch das Schild hast du 150🛡️ Gesundheit bekommen."
+                        "Durch das Schild hast du 180🛡️ Gesundheit bekommen."
                       );
                     } else {
                       sendMessage(
@@ -757,7 +725,7 @@ function requestMessages() {
                     aktuellerSpieler.y
                   );
                   var antwort =
-                    "Du kämpfst automatisch, wenn du ein Feld mit einem Gegner betrittst. Der Kampf findet alle 10 Minuten gegen den ersten Gegner in der Reihe statt.\n\n";
+                    "Du kämpfst automatisch, wenn du ein Feld mit einem Gegner betrittst. Der Kampf findet alle 5 Minuten gegen den ersten Gegner in der Reihe statt.\n\n";
                   if (fullInfo(aktuellerSpieler, "monster") == "") {
                     antwort += "Hier befindet sich gerade kein Monster.\n";
                   } else if (fullInfo(aktuellerSpieler, "monster") !== "") {
@@ -791,7 +759,7 @@ function requestMessages() {
                   // loot?
                   if (kartenPunkt.inhalt && kartenPunkt.type !== "truhe") {
                     antwort +=
-                      "Hier liegt diese Waffe: " +
+                      "\n\nHier liegt diese Waffe: " +
                       waffenInfoText(waffen[kartenPunkt.inhalt]) +
                       " Willst du sie /nehmen?";
                   }
@@ -840,10 +808,11 @@ function requestMessages() {
                 case "/heilen":
                 case "/heile":
                   if (aktuellerSpieler.kills >= 1) {
-                    if (aktuellerSpieler.leben >= 100) {
+                    if (aktuellerSpieler.leben >= 90) {
                       aktuellerSpieler.bluten = false;
-                      if ((aktuellerSpieler.waffe || {}).heilung >= 3) {
-                        aktuellerSpieler.waffe.heilung = 3;  
+                      aktuellerSpieler.kills = aktuellerSpieler.kills - 1;
+                      if (((aktuellerSpieler.waffe || {}).heilung || 5) >= 3) {
+                        aktuellerSpieler.waffe.heilung = 3;
                       }
                       sendMessage(
                         message.sender.id_str,
@@ -851,14 +820,14 @@ function requestMessages() {
                       );
                     } else {
                       aktuellerSpieler.kills = aktuellerSpieler.kills - 1;
-                      aktuellerSpieler.leben = aktuellerSpieler.leben + 50;
+                      aktuellerSpieler.leben = aktuellerSpieler.leben + 20;
                       aktuellerSpieler.bluten = false;
-                      if ((aktuellerSpieler.waffe || {}).heilung >= 3) {
-                        aktuellerSpieler.waffe.heilung = 3;  
+                      if (((aktuellerSpieler.waffe || {}).heilung || 5) >= 3) {
+                        aktuellerSpieler.waffe.heilung = 3;
                       }
                       sendMessage(
                         message.sender.id_str,
-                        "Du heilst dich +50🛡️!"
+                        "Du heilst dich +20🛡️!"
                       );
                     }
                   } else {
@@ -966,8 +935,8 @@ function allgemeinerTimer() {
       spieler.leben <= 90 &&
       zufallszahl(1, (spieler.waffe || {}).heilung) == 1
     ) {
-      spieler.leben = spieler.leben + 10;
-      console.log(spieler.screen_name + " wurde geheilt +10 durch Waffe!");
+      spieler.leben = spieler.leben + 5;
+      console.log(spieler.screen_name + " wurde geheilt +5 durch Waffe!");
     }
 
     // stoppt blutung
@@ -1118,7 +1087,7 @@ function fullInfo(aktuellerSpieler, type) {
         richtungen.push("Westen");
       }
       antwort += richtungen.join(" oder ");
-      antwort += " weiter gehen oder dich /umsehen.";
+      antwort += " weiter gehen oder dich nach Loot /umsehen.";
       return antwort;
       break;
 
@@ -1197,7 +1166,7 @@ function kampf(geladenerSpieler) {
           }
 
           if (
-            zufallszahl(1, 15) == 1 &&
+            zufallszahl(1, 5) == 1 &&
             (geladenerSpieler.waffe || {}).angriff >= 23
           ) {
             kritischerTextMonster +=
@@ -1209,16 +1178,6 @@ function kampf(geladenerSpieler) {
 
         // waffen verlieren kraft
         var waffeSchwach = false;
-        if (
-          geladenerSpieler.waffe.maxSchaden &&
-          zufallszahl(1, 15) == 1 &&
-          geladenerSpieler.waffe.angriff <
-            geladenerSpieler.waffe.maxSchaden - 20
-        ) {
-          geladenerSpieler.waffe.maxSchaden--;
-          console.log(geladenerSpieler.screen_name + " waffe maxschaden -1");
-          waffeSchwach = true;
-        }
         if (
           zufallszahl(1, 10) == 1 &&
           (geladenerSpieler.waffe || {}).ausweichen < 5
@@ -1280,11 +1239,8 @@ function kampf(geladenerSpieler) {
       } else {
         console.log("schaden verursacht");
         var kritischerText = "";
-        // tempschaden mit bonus oder nicht und maxschaden
-        var aktSchaden = zufallszahl(
-          geladenerSpieler.waffe.angriff,
-          geladenerSpieler.waffe.maxSchaden || geladenerSpieler.waffe.angriff
-        );
+        // tempschaden mit bonus
+        var aktSchaden = geladenerSpieler.waffe.angriff;
         if (zufallszahl(1, geladenerSpieler.waffe.kritisch || 40) == 1) {
           aktSchaden = aktSchaden + 25;
           kritischerText +=
@@ -1425,13 +1381,14 @@ function kampf(geladenerSpieler) {
       // monster gestorben???
       if (monsters[index].leben <= 0) {
         // loot
-        if (monsters[index].inhalt) {
-          kartenPunkt.inhalt = monsters[index].inhalt;
-        }
         var loot = "";
-        if (kartenPunkt.inhalt) {
-          loot +=
-            "\n\n💎 Bling! Es wurde eine Waffe fallen gelassen. Welche? /umsehen.";
+        if (monsters[index].inhalt && kartenPunkt.type == "feld") {
+          kartenPunkt.inhalt = monsters[index].inhalt;
+
+          if (kartenPunkt.inhalt) {
+            loot +=
+              "\n\n💎 Bling! Es wurde eine Waffe fallen gelassen. Welche? /umsehen.";
+          }
         }
 
         // alle gewinner informieren
@@ -1551,7 +1508,7 @@ function kampf(geladenerSpieler) {
 }
 
 function bossSpawn() {
-  if (zufallszahl(1, 20) == 1) {
+  if (zufallszahl(1, 60) == 1) {
     // big boss
     var map = txtadv.karte;
     var bossFelder = [];
@@ -1618,15 +1575,15 @@ function bossSpawn() {
         zufallszahl(15, 25),
         alleBosse[dieseZahl].spruch
       );
-      derBoss.heilung = zufallszahl(5, 8);
-      derBoss.ausweichen = zufallszahl(4, 8);
+      derBoss.heilung = zufallszahl(2, 3);
+      derBoss.ausweichen = zufallszahl(2, 4);
       derBoss.leben = 200;
-      derBoss.kritsch = zufallszahl(5, 8);
+      derBoss.kritsch = zufallszahl(2, 3);
       derBoss.istBoss = true;
       derBoss.inhalt = waffen[zufallszahl(6, waffen.length - 1)].id;
       txtadv.monster.push(derBoss);
 
-      var maxGegnerSpawn = txtadv.spieler.length * 20;
+      var maxGegnerSpawn = txtadv.spieler.length * 10;
       for (var gegnerZahl = 1; gegnerZahl < maxGegnerSpawn; gegnerZahl++) {
         gegnerSpawn();
       }
@@ -1732,7 +1689,7 @@ function gegnerSpawn(angriff, kritisch, ausweichen, x, y) {
       alleMonsterSTARK[dieseZahl].name,
       gegnerFelder[zufall].x,
       gegnerFelder[zufall].y,
-      zufallszahl(3, 10),
+      zufallszahl(8, 15),
       alleMonsterSTARK[dieseZahl].spruch,
       zufallszahl(50, 100)
     );
