@@ -241,7 +241,7 @@ var waffen = [
   {
     id: 11,
     name: "🌂 Spitzer Regenschirm",
-    angriff: 35,
+    angriff: 40,
     kritisch: 2
   },
   {
@@ -780,7 +780,7 @@ function requestMessages() {
                   // aktuelle zustand des Spielers
                   var antwort = "";
                   if (aktuellerSpieler.bluten) {
-                    antwort += "😱 Überall Blut! ";
+                    antwort += "😱 Überall Blut! Das verringert deine Regeneration. ";
                   }
                   if (aktuellerSpieler.leben <= 50) {
                     antwort +=
@@ -938,7 +938,7 @@ function allgemeinerTimer() {
     }
 
     // stoppt blutung
-    if (spieler.bluten && zufallszahl(0, (spieler.waffe || {}).heilung) == 1) {
+    if (spieler.bluten && zufallszahl(0, (spieler.waffe || {}).heilung || 15) == 1) {
       spieler.bluten = false;
       console.log(spieler.screen_name + " hat Blutung gestoppt!");
     }
@@ -978,7 +978,6 @@ function allgemeinerTimer() {
           console.log("monster bewegt sich: x" + weg.x + "y" + weg.y);
           monsters[index].x = weg.x;
           monsters[index].y = weg.y;
-          speichereDB();
         }
       }
     }
@@ -1156,7 +1155,7 @@ function kampf(geladenerSpieler) {
           // bluten
           if (zufallszahl(1, 5) == 1) {
             kritischerTextMonster =
-              "⚡🩸 Du wurdest stark getroffen und blutest! Das verhindert deine automatische Regeneration.\n";
+              "⚡🩸 Du wurdest stark getroffen und blutest!\n";
             geladenerSpieler.bluten = true;
             console.log(
               geladenerSpieler.screen_name +
@@ -1165,13 +1164,13 @@ function kampf(geladenerSpieler) {
           }
 
           if (
-            zufallszahl(1, 5) == 1 &&
-            (geladenerSpieler.waffe || {}).angriff >= 23
+            zufallszahl(1, 3) == 1 &&
+            (geladenerSpieler.waffe || {}).angriff >= 21
           ) {
             kritischerTextMonster +=
-              "Vor Schreck hast du deine Waffe fallen lassen. Sie ist etwas ramponiert -3⚔️.\n";
-            geladenerSpieler.waffe.angriff = geladenerSpieler.waffe.angriff - 3;
-            console.log(geladenerSpieler.screen_name + " waffe ramponiert -3");
+              "Vor Schreck hast du deine Waffe fallen lassen. Sie ist etwas ramponiert -1⚔️.\n";
+            geladenerSpieler.waffe.angriff = geladenerSpieler.waffe.angriff - 1;
+            console.log(geladenerSpieler.screen_name + " waffe ramponiert -1");
           }
         }
 
@@ -1462,25 +1461,6 @@ function kampf(geladenerSpieler) {
                 gewinner.join(", ") +
                 mehrzahl +
                 "erfolgreich im epischen Kampf!" +
-                rage_mode
-            },
-            function(error, tweet, response) {
-              if (error) {
-                console.log(error);
-              }
-            }
-          );
-        } else {
-          client.post(
-            "statuses/update",
-            {
-              status:
-                "💀 Ein Monster weniger. " +
-                gewinner.join(", ") +
-                mehrzahl +
-                "siegreich. Was ein Kampf! " +
-                capitalizeFirstLetter(monsters[index].name) +
-                " wurde vernichtet!" +
                 rage_mode
             },
             function(error, tweet, response) {
