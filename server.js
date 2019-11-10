@@ -173,7 +173,7 @@ var waffen = [
     name: "🗡️ Kleines Anfängerschwert",
     angriff: 15,
     heilung: 2,
-    kritisch: 2
+    kritisch: 3
   },
   {
     id: 2,
@@ -197,51 +197,51 @@ var waffen = [
   {
     id: 5,
     name: "🥁 Trommel des Todes",
-    angriff: 40,
+    angriff: 35,
     kritisch: 2
   },
   {
     id: 6,
     name: "💣 Handliche Bomben",
-    angriff: 50,
+    angriff: 35,
     ausweichen: 4,
     kritisch: 2
   },
   {
     id: 7,
     name: "🏹 Geschickter Bogen",
-    angriff: 45,
+    angriff: 25,
     ausweichen: 4,
     kritisch: 2
   },
   {
     id: 8,
     name: "📿 Gesegnete Gebetskette",
-    angriff: 38,
-    heilung: 1,
-    kritisch: 3,
+    angriff: 25,
+    heilung: 2,
+    kritisch: 2,
     ausweichen: 3
   },
   {
     id: 9,
     name: "💍 Magischer Ring",
-    angriff: 40,
+    angriff: 30,
     ausweichen: 3,
-    kritisch: 3,
-    heilung: 5
+    kritisch: 2,
+    heilung: 3
   },
   {
     id: 10,
     name: "🏹 Göttlicher Bogen",
-    angriff: 45,
+    angriff: 35,
     ausweichen: 4,
-    heilung: 2,
+    heilung: 3,
     kritisch: 2
   },
   {
     id: 11,
     name: "🌂 Spitzer Regenschirm",
-    angriff: 40,
+    angriff: 35,
     kritisch: 2
   },
   {
@@ -256,7 +256,7 @@ var waffen = [
     angriff: 40,
     kritisch: 2,
     ausweichen: 2,
-    heilung: 5
+    heilung: 4
   }
 ];
 
@@ -364,7 +364,7 @@ function requestMessages() {
   client.get(
     "direct_messages/events/list",
     {
-      count: 50,
+      count: 100,
       skip_status: true
     },
     function(error, messages, response) {
@@ -411,7 +411,7 @@ function requestMessages() {
           }
 
           // message.user.id == 250090545 &&
-          if (txtadv.beantwortet.length >= 150) {
+          if (txtadv.beantwortet.length > 150) {
             // räumt db auf
             txtadv.beantwortet.splice(0, 1);
           }
@@ -705,7 +705,7 @@ function requestMessages() {
                       aktuellerSpieler.kills = aktuellerSpieler.kills - 1;
                       sendMessage(
                         message.sender.id_str,
-                        "Durch das Schild hast du 180🛡️ Gesundheit bekommen."
+                        "180🛡️! Das Schild wird dich schützen."
                       );
                     } else {
                       sendMessage(
@@ -895,8 +895,6 @@ function requestMessages() {
             // user closed
           }
         });
-        // wenn es keinen fehler mit der api gibt
-        speichereDB();
       }
     }
   );
@@ -932,7 +930,7 @@ function allgemeinerTimer() {
     // heilung
     if (
       !spieler.bluten &&
-      spieler.leben <= 90 &&
+      spieler.leben <= 95 &&
       zufallszahl(1, (spieler.waffe || {}).heilung) == 1
     ) {
       spieler.leben = spieler.leben + 5;
@@ -959,19 +957,19 @@ function allgemeinerTimer() {
     ) {
       var wegOptionen = [];
       var süden = koordinaten(monsters[index].x, monsters[index].y + 1);
-      if (süden || tempBuff.ragemode) {
+      if (süden) {
         wegOptionen.push(süden);
       }
       var norden = koordinaten(monsters[index].x, monsters[index].y - 1);
-      if (norden || tempBuff.ragemode) {
+      if (norden) {
         wegOptionen.push(norden);
       }
       var osten = koordinaten(monsters[index].x + 1, monsters[index].y);
-      if (osten || tempBuff.ragemode) {
+      if (osten) {
         wegOptionen.push(osten);
       }
       var westen = koordinaten(monsters[index].x - 1, monsters[index].y);
-      if (westen || tempBuff.ragemode) {
+      if (westen) {
         wegOptionen.push(westen);
       }
       if (wegOptionen.length > 0) {
@@ -980,6 +978,7 @@ function allgemeinerTimer() {
           console.log("monster bewegt sich: x" + weg.x + "y" + weg.y);
           monsters[index].x = weg.x;
           monsters[index].y = weg.y;
+          speichereDB();
         }
       }
     }
@@ -1494,13 +1493,6 @@ function kampf(geladenerSpieler) {
 
         monsters.splice(index, 1);
 
-        // neues monster???
-        if (zufallszahl(1, 3) === 1) {
-          console.log("neues monster!");
-          gegnerSpawn();
-        } else {
-          console.log("monster dauerhaft tot!");
-        }
       }
       break;
     }
@@ -1606,33 +1598,20 @@ function bossSpawn() {
   }
 }
 
-function gegnerSpawn(angriff, kritisch, ausweichen, x, y) {
+function gegnerSpawn() {
   var gegnerFelder = [];
-  if (x && y) {
-    gegnerFelder.push({
-      x: x,
-      y: y
-    });
-  } else {
-    // var map = txtadv.karte
-    /* for (var index = 0; index < map.length; index++) {
-			if (map[index].type == "feld") {
-				gegnerFelder.push(map[index])
-			}
-		} */
-    gegnerFelder.push({
-      x: 6,
-      y: 4
-    });
-    gegnerFelder.push({
-      x: 6,
-      y: 3
-    });
-    gegnerFelder.push({
-      x: 5,
-      y: 4
-    });
-  }
+  gegnerFelder.push({
+    x: 6,
+    y: 4
+  });
+  gegnerFelder.push({
+    x: 6,
+    y: 3
+  });
+  gegnerFelder.push({
+    x: 5,
+    y: 4
+  });
 
   console.log("monster spawn");
   var zufall = zufallszahl(0, gegnerFelder.length - 1);
@@ -1694,9 +1673,9 @@ function gegnerSpawn(angriff, kritisch, ausweichen, x, y) {
       zufallszahl(50, 100)
     );
     zufallsMonsterSTARK.inhalt = waffen[zufallszahl(2, 8)].id;
-    zufallsMonsterSTARK.ausweichen = ausweichen || zufallszahl(4, 8);
-    zufallsMonsterSTARK.heilung = zufallszahl(5, 10);
-    zufallsMonsterSTARK.kritisch = kritisch || zufallszahl(5, 10);
+    zufallsMonsterSTARK.ausweichen = zufallszahl(4, 6);
+    zufallsMonsterSTARK.heilung = zufallszahl(5, 6);
+    zufallsMonsterSTARK.kritisch = zufallszahl(5, 6);
     txtadv.monster.push(zufallsMonsterSTARK);
   } else {
     var alleMonster = [
@@ -1778,17 +1757,17 @@ function waffenInfoText(waffe) {
   if (waffe.kritisch) {
     antwort += "1/" + waffe.kritisch + "🔥 Angriff ist kritisch!\n";
   }
-  if (waffe.ausweichen) {
-    antwort +=
-      "Mit dieser Waffe hast du eine 1/" +
-      waffe.ausweichen +
-      "👤 Chance Angriffen auszuweichen.\n";
-  }
   if (waffe.heilung) {
     antwort +=
       "Damit hast du eine 1/" +
       waffe.heilung +
       "💉 Chance dich selbst zu heilen.\n";
+  }
+  if (waffe.ausweichen) {
+    antwort +=
+      "Mit dieser Waffe hast du eine 1/" +
+      waffe.ausweichen +
+      "👤 Chance Angriffen auszuweichen.\n";
   }
   return antwort;
 }
