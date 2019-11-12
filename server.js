@@ -12,7 +12,7 @@ var aktuelleKarte = [
     x: 1,
     y: 1,
     text:
-      "Du stehst am Eingang des Dungeon. Vor dir wartet die Dunkelheit und eine Horde hungriger Monster. Versuche /osten oder die /hilfe."
+      "Du stehst am Eingang des Dungeons. Vor dir wartet die Dunkelheit und eine Horde hungriger Monster. Versuche /osten oder die /hilfe."
   },
   {
     type: "heiltrank",
@@ -26,21 +26,21 @@ var aktuelleKarte = [
     x: 1,
     y: 3,
     text:
-      "Aus dem Süden hört man regelmäßiges Schlagen auf Metall. Was ist das?"
+      "Aus dem Süden hörst du regelmäßiges Hämmern auf Metall. Was ist das?"
   },
   {
     type: "amboss",
     x: 1,
     y: 4,
     text:
-      "🛠️ Eine kleine Schmiede mit Amboss. Der Ofen glüht noch und es gibt auch einige Zauberbücher. Du kannst für 5 Heldendaten einen Zauberspruch /lernen oder zur Verteidigung ein /Schild schmieden im Austausch für eine Heldentat. Das Schild gibt dir 150🛡️ Gesundheit."
+      "🛠️ Eine kleine Schmiede. Der Ofen glüht noch und es gibt auch einige Zauberbücher. Du kannst für 5 Heldendaten einen Zauberspruch /lernen oder zur Verteidigung ein /Schild schmieden im Austausch für eine Heldentat. Das Schild gibt dir 180🛡️ Gesundheit."
   },
   {
     type: "truhe",
     x: 2,
     y: 1,
     text:
-      "Du siehst eine alte Holztruhe. Willst du wissen was sich darin befindet, dann versuche /öffnen.\n\nWaffen können in der Schmiede verbessert werden. Vorher solltest du aber Monster töten. Wenn du weiter nach /Osten gehst, bist du auf dich allein gestellt.",
+      "Du siehst eine alte Holztruhe. Willst du wissen was sich darin befindet, dann versuche /öffnen.\n\nStärkere Monster lassen Waffen fallen, die du danach vom Boden /nehmen kannst.",
     inhalt: 1
   },
   {
@@ -54,7 +54,7 @@ var aktuelleKarte = [
     type: "feld",
     x: 2,
     y: 4,
-    text: "Im Westen kannst du deine Waffe verbessern."
+    text: "Im Westen ist eine Schmiede. Dort kannst du dir ein Schild schmieden."
   },
   {
     type: "feld",
@@ -80,7 +80,7 @@ var aktuelleKarte = [
     y: 4,
     text:
       "Mitten im Dungeon siehst du eine 🍀Kiste des Glücks! Diese Kiste bietet ein wechselndes Angebot von gewöhnlichen Waffen. Versuche deine Glück mit /öffnen.",
-    inhalt: 4
+    inhalt: 2
   },
   {
     type: "feld",
@@ -123,14 +123,14 @@ var aktuelleKarte = [
     type: "feld",
     x: 5,
     y: 3,
-    text: "Alles ist voller Eier. Hier kann jederzeit ein Monster schlüpfen!"
+    text: "Ist das ihr Nest? Hier können jederzeit neue Monster auftauchen!"
   },
   {
     type: "feld",
     x: 5,
     y: 4,
     text:
-      "Du bist ganz in der Nähe des dunklen Throns. Hier gibt es einige Monstereier!"
+      "Du bist ganz in der Nähe des dunklen Throns!"
   },
   {
     type: "truhe",
@@ -138,7 +138,7 @@ var aktuelleKarte = [
     y: 1,
     text:
       "Du siehst eine 🍀Kiste des Glücks! Diese Kiste bietet ein wechselndes Angebot von gewöhnlichen Waffen. Versuche deine Glück mit /öffnen.",
-    inhalt: 7
+    inhalt: 3
   },
   {
     type: "altar",
@@ -152,7 +152,7 @@ var aktuelleKarte = [
     x: 6,
     y: 3,
     text:
-      "Hier hat die Brut ihren Ursprung. Jederzeit können neue Monster auftauchen! Früher war hier ein netter Ort. Jetzt nicht mehr..."
+      "Hier hat die Brut ihren Ursprung. Jederzeit können neue Monster auftauchen!"
   },
   {
     type: "bossfeld",
@@ -166,13 +166,13 @@ var waffen = [
     id: 0,
     name: "👊 Nackte Fäuste",
     angriff: 10,
-    heilung: 2
+    heilung: 1
   },
   {
     id: 1,
     name: "🗡️ Kleines Anfängerschwert",
     angriff: 15,
-    heilung: 2,
+    heilung: 1,
     kritisch: 3
   },
   {
@@ -185,8 +185,7 @@ var waffen = [
     id: 3,
     name: "🎯 Tasche mit Dartpfeilen",
     angriff: 25,
-    ausweichen: 2,
-    kritisch: 3
+    kritisch: 2
   },
   {
     id: 4,
@@ -197,7 +196,7 @@ var waffen = [
   {
     id: 5,
     name: "🥁 Trommel des Todes",
-    angriff: 35,
+    angriff: 30,
     kritisch: 2
   },
   {
@@ -218,7 +217,7 @@ var waffen = [
     id: 8,
     name: "📿 Gesegnete Gebetskette",
     angriff: 25,
-    heilung: 2,
+    heilung: 1,
     kritisch: 2,
     ausweichen: 3
   },
@@ -228,14 +227,14 @@ var waffen = [
     angriff: 30,
     ausweichen: 3,
     kritisch: 2,
-    heilung: 3
+    heilung: 1
   },
   {
     id: 10,
     name: "🏹 Göttlicher Bogen",
     angriff: 35,
     ausweichen: 4,
-    heilung: 3,
+    heilung: 1,
     kritisch: 2
   },
   {
@@ -248,7 +247,8 @@ var waffen = [
     id: 12,
     name: "🔱 Neptuns Dreizack",
     angriff: 80,
-    kritisch: 2
+    kritisch: 1,
+    heilung: 1
   },
   {
     id: 13,
@@ -256,7 +256,7 @@ var waffen = [
     angriff: 40,
     kritisch: 2,
     ausweichen: 2,
-    heilung: 4
+    heilung: 1
   }
 ];
 
@@ -646,7 +646,7 @@ function requestMessages() {
                     );
                   } else if (kartenPunkt.type == "altar") {
                     aktuellerSpieler.amulett = true;
-                    (aktuellerSpieler.waffe || {}).heilung = 2;
+                    (aktuellerSpieler.waffe || {}).heilung = 1;
                     sendMessage(
                       message.sender.id_str,
                       "Du hast ein Amulett der Heilung gefunden. ☘️ Damit kann deine Heilkraft nicht mehr geschwächt werden!"
@@ -808,26 +808,22 @@ function requestMessages() {
                 case "/heilen":
                 case "/heile":
                   if (aktuellerSpieler.kills >= 1) {
-                    if (aktuellerSpieler.leben >= 90) {
+                    if (aktuellerSpieler.leben >= 80) {
                       aktuellerSpieler.bluten = false;
                       aktuellerSpieler.kills = aktuellerSpieler.kills - 1;
-                      if (((aktuellerSpieler.waffe || {}).heilung || 5) >= 3) {
-                        aktuellerSpieler.waffe.heilung = 3;
-                      }
+                      aktuellerSpieler.waffe.heilung = 1;
                       sendMessage(
                         message.sender.id_str,
-                        "Du bist gesund und fit. Du kannst dich nicht mehr heilen!"
+                        "Du bist gesund und fit! Deine Regenerationsrate ist 1/1💉."
                       );
                     } else {
                       aktuellerSpieler.kills = aktuellerSpieler.kills - 1;
                       aktuellerSpieler.leben = aktuellerSpieler.leben + 20;
                       aktuellerSpieler.bluten = false;
-                      if (((aktuellerSpieler.waffe || {}).heilung || 5) >= 3) {
-                        aktuellerSpieler.waffe.heilung = 3;
-                      }
+                      aktuellerSpieler.waffe.heilung = 1;
                       sendMessage(
                         message.sender.id_str,
-                        "Du heilst dich +20🛡️!"
+                        "Du heilst dich +20🛡️! Deine Regenerationsrate ist 1/1💉."
                       );
                     }
                   } else {
@@ -841,7 +837,7 @@ function requestMessages() {
                 case "/beten":
                 case "/bete":
                   aktuellerSpieler.waffe = waffen[0];
-                  aktuellerSpieler.waffe.ausweichen = 4;
+                  aktuellerSpieler.waffe.ausweichen = 3;
                   sendMessage(
                     message.sender.id_str,
                     "Du wirfst deine Waffe im hohen Bogen weg, fängst an zu beten und hoffst Angriffen auszuweichen."
@@ -898,7 +894,7 @@ function requestMessages() {
       }
     }
   );
-
+  speichereDB();
   setTimeout(requestMessages, DMTimer);
 }
 
@@ -930,11 +926,16 @@ function allgemeinerTimer() {
     // heilung
     if (
       !spieler.bluten &&
-      spieler.leben <= 95 &&
+      spieler.leben <= 99 &&
       zufallszahl(1, (spieler.waffe || {}).heilung) == 1
     ) {
-      spieler.leben = spieler.leben + 5;
-      console.log(spieler.screen_name + " wurde geheilt +5 durch Waffe!");
+      if (spieler.leben <= 20) {
+        spieler.leben = spieler.leben + 5;
+      } else {
+        spieler.leben = spieler.leben + 1;
+      }
+      
+      console.log(spieler.screen_name + " wurde geheilt +1 durch Waffe!");
     }
 
     // stoppt blutung
@@ -984,7 +985,6 @@ function allgemeinerTimer() {
   }
 
   bossSpawn();
-  speichereDB();
   setTimeout(allgemeinerTimer, 1 * 60000);
 }
 
@@ -1147,13 +1147,14 @@ function kampf(geladenerSpieler) {
         console.log("schaden an spieler verursacht");
 
         var kritischerTextMonster = "";
-        if (zufallszahl(1, monsters[index].kritisch || 25) == 1) {
-          tempSchaden = tempSchaden + 5;
+        if (zufallszahl(1, monsters[index].kritisch || 15) == 1) {
+          tempSchaden = tempSchaden + 10;
           kritischerTextMonster = "⚡ Du wurdest stark getroffen!\n";
           console.log(geladenerSpieler.screen_name + " mehr schaden");
 
           // bluten
-          if (zufallszahl(1, 5) == 1) {
+          if (zufallszahl(1, 3) == 1) {
+            tempSchaden = tempSchaden + 5;
             kritischerTextMonster =
               "⚡🩸 Du wurdest stark getroffen und blutest!\n";
             geladenerSpieler.bluten = true;
@@ -1196,7 +1197,7 @@ function kampf(geladenerSpieler) {
         if (
           !geladenerSpieler.amulett &&
           zufallszahl(1, 15) == 1 &&
-          (geladenerSpieler.waffe || {}).heilung < 7
+          (geladenerSpieler.waffe || {}).heilung < 4
         ) {
           geladenerSpieler.waffe.heilung = geladenerSpieler.waffe.heilung + 1;
           console.log(geladenerSpieler.screen_name + " waffe heilung -1");
@@ -1223,7 +1224,7 @@ function kampf(geladenerSpieler) {
         kampfInfo +=
           kritischerTextMonster +
           spruch +
-          "\nDeine Gesundheit liegt bei " +
+          "\n\nDeine Gesundheit liegt bei " +
           geladenerSpieler.leben +
           "🛡️.\n";
       }
@@ -1239,8 +1240,8 @@ function kampf(geladenerSpieler) {
         var kritischerText = "";
         // tempschaden mit bonus
         var aktSchaden = geladenerSpieler.waffe.angriff;
-        if (zufallszahl(1, geladenerSpieler.waffe.kritisch || 40) == 1) {
-          aktSchaden = aktSchaden + 25;
+        if (zufallszahl(1, geladenerSpieler.waffe.kritisch || 30) == 1) {
+          aktSchaden = aktSchaden + 10;
           kritischerText +=
             "🔥 Kritischer Treffer! Du machst starken Schaden.\n";
         }
@@ -1291,28 +1292,11 @@ function kampf(geladenerSpieler) {
 
       // wenig energie warnung
       if (
-        geladenerSpieler.leben <= 40 &&
-        geladenerSpieler.leben > 10 &&
-        zufallszahl(1, 5) == 1
+        geladenerSpieler.leben <= 25
       ) {
         console.log("wenig energie warnung");
         kampfInfo +=
-          "⚠️ Erschöpfung, Verletzungen und Schreie! Langsam solltest du dich selbst in Sicherheit bringen...\n";
-        client.post(
-          "statuses/update",
-          {
-            status:
-              "📯 Jemand braucht Hilfe! Macht euch auf den Weg. x" +
-              geladenerSpieler.x +
-              "y" +
-              geladenerSpieler.y
-          },
-          function(error, tweet, response) {
-            if (error) {
-              console.log(error);
-            }
-          }
-        );
+          "\n\n⚠️ Erschöpfung, Verletzungen und Schreie! Langsam solltest du dich selbst in Sicherheit bringen...\n\n";
       }
 
       // kurze info
@@ -1380,7 +1364,7 @@ function kampf(geladenerSpieler) {
       if (monsters[index].leben <= 0) {
         // loot
         var loot = "";
-        if (monsters[index].inhalt && kartenPunkt.type == "feld") {
+        if (monsters[index].inhalt && kartenPunkt.type !== "truhe" && kartenPunkt.type !== "heiltrank") {
           kartenPunkt.inhalt = monsters[index].inhalt;
 
           if (kartenPunkt.inhalt) {
@@ -1518,6 +1502,10 @@ function bossSpawn() {
           spruch: "💢 Sein Feuerkegel bläst dich fast weg!"
         },
         {
+          name: "🛸 Grüne Aliens",
+          spruch: "💢 Sie versuchen dich hoch zu beamen!"
+        },
+        {
           name: "🦖 Wütender T-Rex",
           spruch: "💢 Er frisst dich fast!"
         },
@@ -1547,10 +1535,10 @@ function bossSpawn() {
         zufallszahl(15, 25),
         alleBosse[dieseZahl].spruch
       );
-      derBoss.heilung = zufallszahl(2, 3);
-      derBoss.ausweichen = zufallszahl(2, 4);
+      derBoss.heilung = zufallszahl(3, 5);
+      derBoss.ausweichen = zufallszahl(3, 5);
       derBoss.leben = 200;
-      derBoss.kritsch = zufallszahl(2, 3);
+      derBoss.kritsch = zufallszahl(2, 5);
       derBoss.istBoss = true;
       derBoss.inhalt = waffen[zufallszahl(6, waffen.length - 1)].id;
       txtadv.monster.push(derBoss);
@@ -1596,7 +1584,7 @@ function gegnerSpawn() {
   console.log("monster spawn");
   var zufall = zufallszahl(0, gegnerFelder.length - 1);
 
-  if (zufallszahl(1, 3) == 1) {
+  if (zufallszahl(1, 2) == 1) {
     var alleMonsterSTARK = [
       {
         name: "🦍 Hungriger Gorilla",
@@ -1631,6 +1619,10 @@ function gegnerSpawn() {
         spruch: "💢 Er spießt dich fast ganz auf!"
       },
       {
+        name: "🦙 Spuckendes Lama",
+        spruch: "💢 Ihh, voll ins Gesicht gespuckt!"
+      },
+      {
         name: "🐍 Giftige Schlange",
         spruch: "💢 Sie beißt dich an deiner Schulter!"
       },
@@ -1648,14 +1640,14 @@ function gegnerSpawn() {
       alleMonsterSTARK[dieseZahl].name,
       gegnerFelder[zufall].x,
       gegnerFelder[zufall].y,
-      zufallszahl(8, 15),
+      zufallszahl(10, 15),
       alleMonsterSTARK[dieseZahl].spruch,
       zufallszahl(50, 100)
     );
     zufallsMonsterSTARK.inhalt = waffen[zufallszahl(2, 8)].id;
     zufallsMonsterSTARK.ausweichen = zufallszahl(4, 6);
-    zufallsMonsterSTARK.heilung = zufallszahl(5, 6);
-    zufallsMonsterSTARK.kritisch = zufallszahl(5, 6);
+    zufallsMonsterSTARK.heilung = zufallszahl(4, 6);
+    zufallsMonsterSTARK.kritisch = zufallszahl(4, 6);
     txtadv.monster.push(zufallsMonsterSTARK);
   } else {
     var alleMonster = [
@@ -1691,7 +1683,7 @@ function gegnerSpawn() {
       gegnerFelder[zufall].y,
       zufallszahl(3, 8),
       alleMonster[dieseZahl].spruch,
-      zufallszahl(30, 60)
+      zufallszahl(30, 50)
     );
     txtadv.monster.push(zufallsMonster);
   }
@@ -1803,7 +1795,7 @@ function eineWand() {
 function directionInfos(kartenPunkt, aktuellerSpieler) {
   return (
     (kartenPunkt.text || "") +
-    " " +
+    "\n\n" +
     fullInfo(aktuellerSpieler, "bewegungSpielerInfo") +
     " " +
     fullInfo(aktuellerSpieler, "monstershort") +
