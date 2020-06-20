@@ -25,8 +25,7 @@ var aktuelleKarte = [
     type: "feld",
     x: 1,
     y: 3,
-    text:
-      "Aus dem Süden hörst du regelmäßiges Hämmern auf Metall. Was ist das?"
+    text: "Aus dem Süden hörst du regelmäßiges Hämmern auf Metall. Was ist das?"
   },
   {
     type: "amboss",
@@ -40,7 +39,7 @@ var aktuelleKarte = [
     x: 2,
     y: 1,
     text:
-      "Du siehst eine alte Holztruhe. Willst du wissen was sich darin befindet, dann versuche /öffnen.\n\nStärkere Monster lassen Waffen fallen, die du danach vom Boden /nehmen kannst.",
+      "🎁 Du siehst eine alte Holztruhe. Willst du wissen was sich darin befindet, dann versuche /öffnen.\n\nStärkere Monster lassen Waffen fallen, die du danach vom Boden /nehmen kannst.",
     inhalt: 1
   },
   {
@@ -48,13 +47,14 @@ var aktuelleKarte = [
     x: 2,
     y: 3,
     text:
-      "Es ist so heiß hier! Es muss ein großer Ofen in der Nähe sein. Puh, du schwitzt, hoffentlich hält dein Deo."
+      "🌡️ Es ist so heiß hier! Es muss ein großer Ofen in der Nähe sein. Puh, du schwitzt, hoffentlich hält dein Deo."
   },
   {
     type: "feld",
     x: 2,
     y: 4,
-    text: "Im Westen ist eine Schmiede. Dort kannst du dir ein Schild schmieden."
+    text:
+      "👈 Im Westen ist eine Schmiede. Dort kannst du dir ein Schild schmieden."
   },
   {
     type: "feld",
@@ -79,58 +79,57 @@ var aktuelleKarte = [
     x: 3,
     y: 4,
     text:
-      "Mitten im Dungeon siehst du eine 🍀Kiste des Glücks! Diese Kiste bietet ein wechselndes Angebot von gewöhnlichen Waffen. Versuche deine Glück mit /öffnen.",
+      "🍀 Mitten im Dungeon siehst du eine Kiste des Glücks! Diese Kiste bietet ein wechselndes Angebot von gewöhnlichen Waffen. Versuche deine Glück mit /öffnen.",
     inhalt: 2
   },
   {
     type: "feld",
     x: 4,
     y: 1,
-    text: "Ein kahler Platz. Deine Fackel erleuchtet den Weg."
+    text: "🔥 Ein kahler Platz. Deine Fackel erleuchtet den Weg."
   },
   {
     type: "feld",
     x: 4,
     y: 2,
-    text: "Du siehst Blut an den Wänden. Hier wird viel gekämpft."
+    text: "🩸 Du siehst Blut an den Wänden. Hier wird viel gekämpft."
   },
   {
     type: "feld",
     x: 4,
     y: 3,
-    text: "Dunkelheit, Dreck und Monstergeschrei!"
+    text: "⛔ Dunkelheit, Dreck und Monstergeschrei!"
   },
   {
     type: "altar",
     x: 4,
     y: 4,
     text:
-      "Überall hörst du Monster! Moment, da glitzert etwas im Dreck! /nehmen?"
+      "⛩️ Überall hörst du Monster! Moment, da glitzert etwas im Dreck! /nehmen?"
   },
   {
     type: "feld",
     x: 5,
     y: 1,
-    text: "Im /Osten siehst du etwas leuchten im Dunkeln!"
+    text: "👉 Im /Osten siehst du etwas leuchten im Dunkeln!"
   },
   {
     type: "feld",
     x: 5,
     y: 2,
-    text: "Ist das eine Ratte? Wow, ist das düster hier unten."
+    text: "🌫️ Ist das eine Ratte? Wow, ist das düster hier unten."
   },
   {
     type: "feld",
     x: 5,
     y: 3,
-    text: "Ist das ihr Nest? Hier können jederzeit neue Monster auftauchen!"
+    text: "⚠️ Ist das ihr Nest? Hier können jederzeit neue Monster auftauchen!"
   },
   {
     type: "feld",
     x: 5,
     y: 4,
-    text:
-      "Du bist ganz in der Nähe des dunklen Throns!"
+    text: "⚠️ Du bist ganz in der Nähe des dunklen Throns!"
   },
   {
     type: "truhe",
@@ -145,14 +144,14 @@ var aktuelleKarte = [
     x: 6,
     y: 2,
     text:
-      "Ein kleiner Altar mit Kerzen und einige Zeichen auf dem Boden. Du siehst ein Amulett, es wird deine Heilung verbessern! /nehmen?"
+      "⛩️ Ein kleiner Altar mit Kerzen und einige Zeichen auf dem Boden. Du siehst ein Amulett, es wird deine Heilung verbessern! /nehmen?"
   },
   {
     type: "feld",
     x: 6,
     y: 3,
     text:
-      "Hier hat die Brut ihren Ursprung. Jederzeit können neue Monster auftauchen!"
+      "⚠️ Hier hat die Brut ihren Ursprung. Jederzeit können neue Monster auftauchen!"
   },
   {
     type: "bossfeld",
@@ -179,30 +178,35 @@ var waffen = [
     id: 2,
     name: "🔧 Alter Schraubenschlüssel",
     angriff: 25,
+    heilung: 2,
     kritisch: 2
   },
   {
     id: 3,
     name: "🎯 Tasche mit Dartpfeilen",
     angriff: 25,
+    heilung: 2,
     kritisch: 2
   },
   {
     id: 4,
     name: "🏒 Blutiger Eishockeyschläger",
     angriff: 30,
+    heilung: 2,
     kritisch: 2
   },
   {
     id: 5,
     name: "🥁 Trommel des Todes",
     angriff: 30,
+    heilung: 2,
     kritisch: 2
   },
   {
     id: 6,
     name: "💣 Handliche Bomben",
     angriff: 35,
+    heilung: 2,
     ausweichen: 4,
     kritisch: 2
   },
@@ -211,6 +215,7 @@ var waffen = [
     name: "🏹 Geschickter Bogen",
     angriff: 25,
     ausweichen: 4,
+    heilung: 2,
     kritisch: 2
   },
   {
@@ -224,7 +229,7 @@ var waffen = [
   {
     id: 9,
     name: "💍 Magischer Ring",
-    angriff: 30,
+    angriff: 40,
     ausweichen: 3,
     kritisch: 2,
     heilung: 1
@@ -233,14 +238,15 @@ var waffen = [
     id: 10,
     name: "🏹 Göttlicher Bogen",
     angriff: 35,
-    ausweichen: 4,
+    ausweichen: 2,
     heilung: 1,
-    kritisch: 2
+    kritisch: 1
   },
   {
     id: 11,
     name: "🌂 Spitzer Regenschirm",
     angriff: 40,
+    heilung: 3,
     kritisch: 2
   },
   {
@@ -257,6 +263,20 @@ var waffen = [
     kritisch: 2,
     ausweichen: 2,
     heilung: 1
+  },
+  {
+    id: 14,
+    name: "🧱 Ziegelsteinwerfer",
+    angriff: 50,
+    heilung: 3,
+    kritisch: 2
+  },
+  {
+    id: 15,
+    name: "🧨 Feuerwerkskörper",
+    angriff: 50,
+    heilung: 3,
+    kritisch: 2
   }
 ];
 
@@ -266,10 +286,11 @@ var txtadvDEFAULTs = {
   beantwortet: [],
   monster: []
 };
-var kampfTimer = 5 * 60 * 1000;
+var kampfTimer = 3 * 60 * 1000 + 1;
 var DMTimer = 1 * 60 * 1000;
 var globalTimer = 5000;
 var tempBuff = {};
+tempBuff.ragemode = false;
 
 var txtadv = txtadvDEFAULTs;
 // speichereDB()
@@ -497,6 +518,7 @@ function requestMessages() {
                 case "/gehe norden":
                 case "/norden":
                 case "/hoch":
+                case "/👆":
                 case "/oben":
                   // gehe richtung norden wenn es das gibt
                   if (koordinaten(aktuellerSpieler.x, aktuellerSpieler.y - 1)) {
@@ -510,16 +532,14 @@ function requestMessages() {
                       directionInfos(kartenPunkt, aktuellerSpieler)
                     );
                   } else {
-                    sendMessage(
-                      message.sender.id_str,
-                      eineWand()
-                    );
+                    sendMessage(message.sender.id_str, eineWand());
                   }
                   break;
 
                 case "/gehe richtung osten":
                 case "/gehe osten":
                 case "/osten":
+                case "/👉":
                 case "/rechts":
                   // gehe richtung osten wenn es das gibt
                   if (koordinaten(aktuellerSpieler.x + 1, aktuellerSpieler.y)) {
@@ -533,10 +553,7 @@ function requestMessages() {
                       directionInfos(kartenPunkt, aktuellerSpieler)
                     );
                   } else {
-                    sendMessage(
-                      message.sender.id_str,
-                      eineWand()
-                    );
+                    sendMessage(message.sender.id_str, eineWand());
                   }
                   break;
 
@@ -544,6 +561,7 @@ function requestMessages() {
                 case "/gehe süden":
                 case "/süden":
                 case "/unten":
+                case "/👇":
                 case "/runter":
                   // gehe richtung süden wenn es das gibt
                   if (koordinaten(aktuellerSpieler.x, aktuellerSpieler.y + 1)) {
@@ -557,16 +575,14 @@ function requestMessages() {
                       directionInfos(kartenPunkt, aktuellerSpieler)
                     );
                   } else {
-                    sendMessage(
-                      message.sender.id_str,
-                      eineWand()
-                    );
+                    sendMessage(message.sender.id_str, eineWand());
                   }
                   break;
 
                 case "/gehe richtung westen":
                 case "/gehe westen":
                 case "/westen":
+                case "/👈":
                 case "/links":
                   // gehe richtung westen wenn es das gibt
                   if (koordinaten(aktuellerSpieler.x - 1, aktuellerSpieler.y)) {
@@ -580,10 +596,7 @@ function requestMessages() {
                       directionInfos(kartenPunkt, aktuellerSpieler)
                     );
                   } else {
-                    sendMessage(
-                      message.sender.id_str,
-                      eineWand()
-                    );
+                    sendMessage(message.sender.id_str, eineWand());
                   }
                   break;
 
@@ -631,7 +644,7 @@ function requestMessages() {
                     aktuellerSpieler.waffe = waffen[kartenPunkt.inhalt];
                     if (
                       kartenPunkt.type !== "truhe" &&
-                      zufallszahl(1, 3) == 1
+                      zufallszahl(1, 2) == 1
                     ) {
                       kartenPunkt.inhalt = false;
                     }
@@ -780,7 +793,8 @@ function requestMessages() {
                   // aktuelle zustand des Spielers
                   var antwort = "";
                   if (aktuellerSpieler.bluten) {
-                    antwort += "😱 Überall Blut! Das verringert deine Regeneration. ";
+                    antwort +=
+                      "😱 Überall Blut! Das verringert deine Regeneration. ";
                   }
                   if (aktuellerSpieler.leben <= 50) {
                     antwort +=
@@ -903,6 +917,11 @@ function allgemeinerTimer() {
   if (koordinaten(6, 1).inhalt && zufallszahl(1, 10) == 1) {
     koordinaten(6, 1).inhalt = waffen[zufallszahl(2, 8)].id;
   }
+  
+  // spawn enemy. 1 per day (app running time)
+  if (zufallszahl(1, 24 * 60) == 1) {
+    gegnerSpawn();
+  }
 
   // spieler langsam heilen
   var map = txtadv.karte;
@@ -927,19 +946,22 @@ function allgemeinerTimer() {
     if (
       !spieler.bluten &&
       spieler.leben <= 99 &&
-      zufallszahl(1, (spieler.waffe || {}).heilung) == 1
+      zufallszahl(1, (spieler.waffe || {}).heilung || 5) == 1
     ) {
-      if (spieler.leben <= 20) {
+      if (spieler.leben < 20) {
         spieler.leben = spieler.leben + 5;
       } else {
         spieler.leben = spieler.leben + 1;
       }
-      
+
       console.log(spieler.screen_name + " wurde geheilt +1 durch Waffe!");
     }
 
     // stoppt blutung
-    if (spieler.bluten && zufallszahl(0, (spieler.waffe || {}).heilung || 15) == 1) {
+    if (
+      spieler.bluten &&
+      zufallszahl(1, (spieler.waffe || {}).heilung || 2) == 1
+    ) {
       spieler.bluten = false;
       console.log(spieler.screen_name + " hat Blutung gestoppt!");
     }
@@ -1073,16 +1095,16 @@ function fullInfo(aktuellerSpieler, type) {
       var antwort = "\n\nDu kannst Richtung ";
       var richtungen = [];
       if (koordinaten(aktuellerSpieler.x, aktuellerSpieler.y - 1)) {
-        richtungen.push("Norden");
+        richtungen.push("👆 /Norden");
       }
       if (koordinaten(aktuellerSpieler.x + 1, aktuellerSpieler.y)) {
-        richtungen.push("Osten");
+        richtungen.push("👉 /Osten");
       }
       if (koordinaten(aktuellerSpieler.x, aktuellerSpieler.y + 1)) {
-        richtungen.push("Süden");
+        richtungen.push("👇 /Süden");
       }
       if (koordinaten(aktuellerSpieler.x - 1, aktuellerSpieler.y)) {
-        richtungen.push("Westen");
+        richtungen.push("👈 /Westen");
       }
       antwort += richtungen.join(" oder ");
       antwort += " weiter gehen oder dich nach Loot /umsehen.";
@@ -1197,7 +1219,7 @@ function kampf(geladenerSpieler) {
         if (
           !geladenerSpieler.amulett &&
           zufallszahl(1, 15) == 1 &&
-          (geladenerSpieler.waffe || {}).heilung < 4
+          (geladenerSpieler.waffe || {}).heilung < 2
         ) {
           geladenerSpieler.waffe.heilung = geladenerSpieler.waffe.heilung + 1;
           console.log(geladenerSpieler.screen_name + " waffe heilung -1");
@@ -1291,9 +1313,7 @@ function kampf(geladenerSpieler) {
       }
 
       // wenig energie warnung
-      if (
-        geladenerSpieler.leben <= 25
-      ) {
+      if (geladenerSpieler.leben <= 30) {
         console.log("wenig energie warnung");
         kampfInfo +=
           "\n\n⚠️ Erschöpfung, Verletzungen und Schreie! Langsam solltest du dich selbst in Sicherheit bringen...\n\n";
@@ -1355,7 +1375,7 @@ function kampf(geladenerSpieler) {
         tempBuff.ragemode = true;
         setTimeout(function() {
           tempBuff.ragemode = false;
-        }, 10 * 60000);
+        }, 1.5 * 60000);
 
         gegnerSpawn();
       }
@@ -1364,7 +1384,13 @@ function kampf(geladenerSpieler) {
       if (monsters[index].leben <= 0) {
         // loot
         var loot = "";
-        if (monsters[index].inhalt && kartenPunkt.type !== "truhe" && kartenPunkt.type !== "heiltrank") {
+        if (
+          monsters[index].inhalt &&
+          kartenPunkt.type !== "truhe" &&
+          kartenPunkt.type !== "amulett" &&
+          kartenPunkt.type !== "amboss" &&
+          kartenPunkt.type !== "heiltrank"
+        ) {
           kartenPunkt.inhalt = monsters[index].inhalt;
 
           if (kartenPunkt.inhalt) {
@@ -1430,10 +1456,12 @@ function kampf(geladenerSpieler) {
           }, 5 * 60000);
         }
 
+        // frag message
         sendMessage(
           geladenerSpieler.id_str,
           "🏆 Du warst stärker als " + monsters[index].name + "!" + loot
         );
+
         if (monsters[index].istBoss) {
           client.post(
             "statuses/update",
@@ -1456,7 +1484,6 @@ function kampf(geladenerSpieler) {
         }
 
         monsters.splice(index, 1);
-
       }
       break;
     }
@@ -1502,7 +1529,7 @@ function bossSpawn() {
           spruch: "💢 Sein Feuerkegel bläst dich fast weg!"
         },
         {
-          name: "🛸 Grüne Aliens",
+          name: "🛸 Grünes Alien",
           spruch: "💢 Sie versuchen dich hoch zu beamen!"
         },
         {
@@ -1524,6 +1551,18 @@ function bossSpawn() {
         {
           name: "🗿 Langsamer Steingolem",
           spruch: "💢 Er zerquetscht dich fast!"
+        },
+        {
+          name: "🤖 Todesroboter aus dem All",
+          spruch: "💢 Laser! Überall Laser!"
+        },
+        {
+          name: "🧙‍♂️ Böser Saruman",
+          spruch: "💢 Er will dich auf seinen Turm verbannen."
+        },
+        {
+          name: "👑 König der Unterwelt",
+          spruch: "💢 Seine Untertanen greifen dich an!"
         }
       ];
       var dieseZahl = zufallszahl(0, alleBosse.length - 1);
@@ -1532,15 +1571,15 @@ function bossSpawn() {
         alleBosse[dieseZahl].name,
         bossFelder[zufall].x,
         bossFelder[zufall].y,
-        zufallszahl(15, 25),
+        zufallszahl(20, 25),
         alleBosse[dieseZahl].spruch
       );
-      derBoss.heilung = zufallszahl(3, 5);
-      derBoss.ausweichen = zufallszahl(3, 5);
+      derBoss.heilung = zufallszahl(2, 4);
+      derBoss.ausweichen = zufallszahl(3, 4);
       derBoss.leben = 200;
-      derBoss.kritsch = zufallszahl(2, 5);
+      derBoss.kritsch = zufallszahl(2, 4);
       derBoss.istBoss = true;
-      derBoss.inhalt = waffen[zufallszahl(6, waffen.length - 1)].id;
+      derBoss.inhalt = waffen[zufallszahl(8, waffen.length - 1)].id;
       txtadv.monster.push(derBoss);
 
       var maxGegnerSpawn = txtadv.spieler.length * 10;
@@ -1616,7 +1655,7 @@ function gegnerSpawn() {
       },
       {
         name: "🐂 Rotäugiger Stier",
-        spruch: "💢 Er spießt dich fast ganz auf!"
+        spruch: "💢 Er spießt dich fast auf!"
       },
       {
         name: "🦙 Spuckendes Lama",
@@ -1624,7 +1663,7 @@ function gegnerSpawn() {
       },
       {
         name: "🐍 Giftige Schlange",
-        spruch: "💢 Sie beißt dich an deiner Schulter!"
+        spruch: "💢 Sie beißt dich in deine Schulter!"
       },
       {
         name: "🐀 Kratzende Ratte",
@@ -1633,6 +1672,10 @@ function gegnerSpawn() {
       {
         name: "🐓 Aufgescheuchter Kampfhahn",
         spruch: "💢 Er will dir ein Auge auspicken!"
+      },
+      {
+        name: "👺 Fieser Goblin",
+        spruch: "💢 Er zwickt dich in den Zeh!"
       }
     ];
     var dieseZahl = zufallszahl(0, alleMonsterSTARK.length - 1);
@@ -1640,14 +1683,14 @@ function gegnerSpawn() {
       alleMonsterSTARK[dieseZahl].name,
       gegnerFelder[zufall].x,
       gegnerFelder[zufall].y,
-      zufallszahl(10, 15),
+      zufallszahl(10, 18),
       alleMonsterSTARK[dieseZahl].spruch,
       zufallszahl(50, 100)
     );
     zufallsMonsterSTARK.inhalt = waffen[zufallszahl(2, 8)].id;
-    zufallsMonsterSTARK.ausweichen = zufallszahl(4, 6);
-    zufallsMonsterSTARK.heilung = zufallszahl(4, 6);
-    zufallsMonsterSTARK.kritisch = zufallszahl(4, 6);
+    zufallsMonsterSTARK.ausweichen = zufallszahl(3, 6);
+    zufallsMonsterSTARK.heilung = zufallszahl(3, 6);
+    zufallsMonsterSTARK.kritisch = zufallszahl(3, 6);
     txtadv.monster.push(zufallsMonsterSTARK);
   } else {
     var alleMonster = [

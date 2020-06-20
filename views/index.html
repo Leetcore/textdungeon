@@ -19,13 +19,12 @@
         position: absolute;
         width: 12px;
         height: 12px;
-        border-radius: 50%;
-        background-color: rgb(37, 73, 23);
       }
       .meinspieler {
         width: 15px;
         height: 15px;
         z-index: 10;
+        border-radius: 50%;
         background-color: rgb(124, 107, 31);
       }
       .spieler:hover, .meinspieler:hover {
@@ -35,7 +34,6 @@
         position: absolute;
         width: 10px;
         height: 10px;
-        background-color: rgb(179, 17, 17);
       }
       #karte {
         position: relative;
@@ -44,6 +42,8 @@
         padding: 5px;
       }
       .feld {
+        border-right: 1px solid #777;
+        border-bottom: 1px solid #777;
         position: absolute;
         width: 80px;
         height: 80px;
@@ -101,7 +101,7 @@
       </h2>
       <p>
         Wenn du ein Feld mit Monstern betrittst, kämpfst du automatisch gegen das erste Monster in der Liste. Du brauchst dazu nichts zu tippen.<br/>
-        Der Schaden wird alle FÜNF Minuten berechnet. Mit /umsehen, kannst du sehen welche Gegner dich erwarten.<br/>
+        Der Schaden wird alle DREI Minuten berechnet. Mit /umsehen, kannst du sehen welche Gegner dich erwarten.<br/>
         Um den Kampf zu beenden, LAUF WEG!!!
       </p>
       <p>
@@ -173,7 +173,7 @@
             var x = (spieler[index].x - 1) * multi + multi / 2 + zufallszahl(-multi / 2, multi / 2)
             var y = (spieler[index].y - 1) * multi + multi / 2 + zufallszahl(-multi / 2, multi / 2)
             // var size = (spieler[index].waffe || {}).angriff || 5
-            document.getElementById('karte').insertAdjacentHTML('beforeend', '<div class="spieler'+ meineSpielerKlasse +'" onclick="clickPlayer(this.title);" style="left: '+ x + 'px; top: '+ y +'px;" title="'+ spieler[index].screen_name + '"></div>')
+            document.getElementById('karte').insertAdjacentHTML('beforeend', '<div class="spieler'+ meineSpielerKlasse +'" onclick="clickPlayer(this.title);" style="left: '+ x + 'px; top: '+ y +'px;" title="'+ spieler[index].screen_name + '">👤</div>')
           }
         }
         function renderMonster (monster) {
@@ -184,8 +184,8 @@
           for (var index = 0; index < monster.length; index++) {
             var x = (monster[index].x - 1) * multi + multi / 2 + zufallszahl(-multi / 2, multi / 2)
             var y = (monster[index].y - 1) * multi + multi / 2 + zufallszahl(-multi / 2, multi / 2)
-            var size = monster[index].angriff
-            document.getElementById('karte').insertAdjacentHTML('beforeend', '<div class="monster" style="left: '+ x + 'px; top: '+ y +'px; width: '+ size +'px; height: '+ size +'px;"></div>')
+            var size = monster[index].angriff * 2;
+            document.getElementById('karte').insertAdjacentHTML('beforeend', '<div class="monster" style="left: '+ x + 'px; top: '+ y +'px; font-size: '+ size +'px;">⚡</div>')
           }
         }
 
